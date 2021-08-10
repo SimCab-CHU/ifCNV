@@ -84,3 +84,37 @@ def scoreAmplif(k,n,N):
   
   
   
+def aberrantTargetsCapture(abSamples, normalSamples, reads_norm, conta=None, lower=-0.5, upper=0.5, verbose=True, output_path=False):
+    if conta == None:
+        conta = 1/reads_norm.shape[1]
+    f = pd.DataFrame(columns=["name","loc","amp"])
+    
+    norm = np.mean(reads_norm[normalSamples], axis = 1)
+    reads_norm_norm = reads_norm/norm
+    
+    
+    q=0
+    for i in tqdm(reads_norm.columns):
+        x = reads_norm[i]/norm
+        x = np.array(np.log2(x[reads_norm[i]!=0]))
+        #pd.DataFrame(x).to_csv("/Users/admin/Documents/CNV/icr_res/"+i+".tsv",sep="\t")
+        random_data = x.reshape(-1, 1)
+        clf = IsolationForest(contamination=conta).fit(random_data)
+        preds = clf.predict(random_data)
+
+        det = np.array(final_norm.index)[reads_norm[i]!=0][preds==-1]
+        ndet = np.array(final_norm.index)[reads_norm[i]!=0][preds==1]
+
+        for j in det:
+            amp = np.log2(reads_norm[i][j]/norm[j])
+            f.loc[q] = [i,j,amp]
+            if amp<lower:
+                f.loc[q] = [i,j,amp]
+                q=q+1
+            if amp>upper:
+                f.loc[q] = [i,j,amp]
+                q=q+1
+                
+    if verbose:
+        print(str(f.shape[0])+" aberrant targets detected in "+str(len(np.unique(f['name'])))+" samples")
+    return f
