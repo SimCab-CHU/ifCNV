@@ -2,7 +2,7 @@
 
 **Dependencies:**
 
-os
+<os
 
 re
 
@@ -20,4 +20,4 @@ argparse
 
 sklearn.ensemble
 
-plotly
+plotly>
