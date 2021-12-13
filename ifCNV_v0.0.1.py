@@ -225,12 +225,10 @@ def createReadsMatrix(pathToBam, bedFile, pathToBedtools, output=None, verbose=F
                 nam = i[:-4]
                 final[nam] = df[len(df.columns)-1]
                 if verbose==True:
-                    print(i[:-4]+" Done")
+                    print(i[:-4]+" Done \n")
             except subprocess.CalledProcessError:
                 print(i[:-4] + ": skipped")
-                print("Hint: Index file must be present in the folder")
-
-
+                print("Hint: Index file (.bai) must be present in the folder \n")
 
     final.index = list(df[3])
 
@@ -350,14 +348,14 @@ parser.add_argument('-i', '--input', type=str, help='Path to the input bam folde
 parser.add_argument('-b', '--bed', type=str, help='Path to the bed file')
 parser.add_argument('-t', '--bedtools', type=str, help='Path to bedtools')
 parser.add_argument('-o', '--output', type=str, help='Path to the output report')
-parser.add_argument('-m', '--mode', type=str, default='fast' help='fast or extensive')
-parser.add_argument('-min', '--minReads', type=str, default=100 help='Min mean reads per target')
+parser.add_argument('-m', '--mode', type=str, default='fast', help='fast or extensive')
+parser.add_argument('-min', '--minReads', type=str, default=100, help='Min mean reads per target')
 parser.add_argument('-cs', '--contaSamples', default = 0.01, help='Contamination parameter for the AberrantSamples function')
-parser.add_argument('-ct', '--contaTargets', default = "auto", help='Contamination parameter for the AberrantTargets function')
+parser.add_argument('-ct', '--contaTargets', default = 0.01, help='Contamination parameter for the AberrantTargets function')
 parser.add_argument('-sT', '--scoreThreshold', type=int, default=5, help='Threshold on the localisation score')
 parser.add_argument('-aT', '--ampThreshold', type=float, default=1.2, help='Threshold on the amplification ratio')
-parser.add_argument('-rS', '--regSample', type=str, default="", help='A pattern for removing controls')
-parser.add_argument('-rT', '--regTargets', type=str, default="", help='A pattern for removing targets')
+parser.add_argument('-rS', '--regSample', type=str, default=None, help='A pattern for removing controls')
+parser.add_argument('-rT', '--regTargets', type=str, default=None, help='A pattern for removing targets')
 parser.add_argument('-v', '--verbose', type=str, default=True, help='A boolean')
 parser.add_argument('-r', '--run', type=str, default="ifCNV", help='The name of the experiment')
 args = parser.parse_args()
@@ -366,7 +364,7 @@ args = parser.parse_args()
 
 reads = createReadsMatrix(pathToBam=args.input,bedFile=args.bed,pathToBedtools=args.bedtools,verbose=args.verbose)
 
-filteredReads, filteredS, filteredT = filterReads(reads=reads, N=args.minReads, regtar=args.regTargets, regsamp=args.regSample, verbose=args.verbose)
+filteredReads, filteredS, filteredT = filterReads(reads=reads, N=args.minReads, regtar=args.regTargets, regsamp=args.regSample)
 
 normReads = normalizeReads(filteredReads)
 
@@ -374,7 +372,7 @@ CNVpos, CNVneg = aberrantSamples(filteredReads,conta=args.contaSamples)
 
 final = aberrantAmpliconsFinal(filteredReads, normReads, CNVpos, CNVneg, scoreThreshold=args.scoreThreshold, conta=args.contaTargets, mode=args.mode, run=args.run)
 
-generateReport(final, output_dir=args.output, normReads)
+generateReport(final, output_dir=args.output, reads=normReads)
 
 
 
