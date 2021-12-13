@@ -201,15 +201,11 @@ def getTemplate():
     """
     return(html)
 
+def replaceZeroes(data):
+    min_nonzero = np.min(data[np.nonzero(data)])
+    data[data == 0] = min_nonzero
+    return(data)
 
-
-
-
-def clean_reference(ref,outliers):
-    for i in outliers:
-        ref = ref.drop(labels=i,axis=1)
-
-    return ref
 
 def createReadsMatrix(pathToBam, bedFile, pathToBedtools, output=None, verbose=False):
     cmd = ["ls", pathToBam]
@@ -302,7 +298,9 @@ def aberrantSamples(reads,conta='auto',verbose=True):
 
 def aberrantAmpliconsPerSample(name,reads_norm,CNVneg,conta=0.01):
     random_data = np.array(reads_norm[name])#.reshape(-1,1)
+    random_data = replaceZeroes(random_data)
     norm = np.array(np.mean(reads_norm[CNVneg], axis = 1))
+    norm = replaceZeroes(norm)
     df = np.log2(random_data/norm)
     clf = IsolationForest(contamination=conta).fit(df.reshape(-1,1))
     preds = clf.predict(df.reshape(-1,1))
@@ -376,7 +374,7 @@ parser.add_argument('-sT', '--scoreThreshold', type=int, default=10, help='Thres
 parser.add_argument('-aT', '--ampThreshold', type=float, default=1.2, help='Threshold on the amplification ratio')
 parser.add_argument('-rS', '--regSample', type=str, default=None, help='A pattern for removing controls')
 parser.add_argument('-rT', '--regTargets', type=str, default=None, help='A pattern for removing targets')
-parser.add_argument('-v', '--verbose', type=bool, default=True, help='A boolean')
+parser.add_argument('-v', '--verbose', type=str, default=True, help='A boolean')
 parser.add_argument('-r', '--run', type=str, default="ifCNV", help='The name of the experiment')
 args = parser.parse_args()
 
