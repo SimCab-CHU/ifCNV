@@ -143,6 +143,15 @@ def getTemplate():
             <tbody>
 				<!--ADD RUN-->
             </tbody>
+            <tfoot class="" style="">
+              <tr class="" style="">
+                <th>Run</th>
+                <th>Sample Name</th>
+                <th>Region</th>
+                <th>Reads ratio</th>
+                <th>Score</th>
+              </tr>
+            </tfoot>
           </table>
         </div>
     </div>
@@ -263,7 +272,7 @@ def normalizeReads(reads):
     return(reads_norm)
 
 
-def aberrantSamples(reads,conta='auto'):    
+def aberrantSamples(reads,conta='auto',verbose=True):    
     tmp = np.percentile(reads, 99, axis = 0)/np.mean(reads, axis = 0)
     random_data = np.array(tmp).reshape(-1,1)
     clf = IsolationForest(contamination=conta).fit(random_data)
@@ -278,6 +287,16 @@ def aberrantSamples(reads,conta='auto'):
     
     res = np.unique(np.concatenate((res_amp,res_del)))
     norm = np.array(reads.columns[~np.in1d(reads.columns,res)])
+    
+    if verbose:
+        print("Aberrant sample(s): \n")
+        for i in res:
+            print("\t"+i+"\n")
+         
+        print("Normal sample(s): \n")
+        for i in norm:
+            print("\t"+i+"\n")
+             
     
     return(res, norm)
 
@@ -309,7 +328,7 @@ def amplifEvalGene(reads_norm,region,CNVneg,sample):
     return val
 
 
-def aberrantAmpliconsFinal(reads, reads_norm, CNVpos, CNVneg, scoreThreshold=10,conta=0.01,mode="fast",run="ifCNV"):
+def aberrantAmpliconsFinal(reads, reads_norm, CNVpos, CNVneg, scoreThreshold=10,conta=0.01,mode="fast",run="ifCNV",verbose=True):
     f = pd.DataFrame(columns=["Run","Sample name","Region","Reads ratio","Score"])
         
     if mode=="extensive":
@@ -335,7 +354,8 @@ def aberrantAmpliconsFinal(reads, reads_norm, CNVpos, CNVneg, scoreThreshold=10,
                 if score>scoreThreshold:
                     f.loc[q] = [run,name,gene,amplif,score]
                     q=q+1
-
+    if verbose:
+        print(str(f.shape[0])+" aberrant regions found in "+str(len(np.unique(f['Sample name'])))+" samples.\n")
     return(f)
 
 
@@ -348,31 +368,38 @@ parser.add_argument('-i', '--input', type=str, help='Path to the input bam folde
 parser.add_argument('-b', '--bed', type=str, help='Path to the bed file')
 parser.add_argument('-t', '--bedtools', type=str, help='Path to bedtools')
 parser.add_argument('-o', '--output', type=str, help='Path to the output report')
+parser.add_argument('-s', '--skip', type=str, default=None, help='A path to the reads matrix')
 parser.add_argument('-m', '--mode', type=str, default='fast', help='fast or extensive')
-parser.add_argument('-min', '--minReads', type=str, default=100, help='Min mean reads per target')
+parser.add_argument('-rm', '--readsMatrixOuptut', type=str, default=None, help='A path to a file to export the reads matrix as a .tsv file')
+parser.add_argument('-min', '--minReads', type=int, default=100, help='Min mean reads per target')
 parser.add_argument('-cs', '--contaSamples', default = "auto", help='Contamination parameter for the AberrantSamples function')
 parser.add_argument('-ct', '--contaTargets', default = 0.05, help='Contamination parameter for the AberrantTargets function')
-parser.add_argument('-sT', '--scoreThreshold', type=int, default=5, help='Threshold on the localisation score')
+parser.add_argument('-sT', '--scoreThreshold', type=int, default=10, help='Threshold on the localisation score')
 parser.add_argument('-aT', '--ampThreshold', type=float, default=1.2, help='Threshold on the amplification ratio')
 parser.add_argument('-rS', '--regSample', type=str, default=None, help='A pattern for removing controls')
 parser.add_argument('-rT', '--regTargets', type=str, default=None, help='A pattern for removing targets')
-parser.add_argument('-v', '--verbose', type=str, default=True, help='A boolean')
+parser.add_argument('-v', '--verbose', type=bool, default=True, help='A boolean')
 parser.add_argument('-r', '--run', type=str, default="ifCNV", help='The name of the experiment')
 args = parser.parse_args()
 
 
-
-reads = createReadsMatrix(pathToBam=args.input,bedFile=args.bed,pathToBedtools=args.bedtools,verbose=args.verbose)
+if args.skip is None:
+    reads = createReadsMatrix(pathToBam=args.input, bedFile=args.bed, pathToBedtools=args.bedtools, verbose=args.verbose, output=args.readsMatrixOuptut)
+else:
+    reads = pd.read_csv(args.skip, sep="\t", index_col=0)
 
 filteredReads, filteredS, filteredT = filterReads(reads=reads, N=args.minReads, regtar=args.regTargets, regsamp=args.regSample)
 
 normReads = normalizeReads(filteredReads)
 
-CNVpos, CNVneg = aberrantSamples(filteredReads,conta=args.contaSamples)
+CNVpos, CNVneg = aberrantSamples(filteredReads,conta=args.contaSamples,verbose=args.verbose)
 
-final = aberrantAmpliconsFinal(filteredReads, normReads, CNVpos, CNVneg, scoreThreshold=args.scoreThreshold, conta=args.contaTargets, mode=args.mode, run=args.run)
+final = aberrantAmpliconsFinal(filteredReads, normReads, CNVpos, CNVneg, scoreThreshold=args.scoreThreshold, conta=args.contaTargets, mode=args.mode, run=args.run, verbose=args.verbose)
 
 generateReport(final, output_dir=args.output, reads=normReads)
+
+if args.verbose:
+    print("ifCNV analysis done succesfully !\n")
 
 
 
