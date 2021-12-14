@@ -381,12 +381,12 @@ parser.add_argument('-min', '--minReads', type=int, default=100, help='Min mean 
 parser.add_argument('-cs', '--contaSamples', default = "auto", help='Contamination parameter for the AberrantSamples function')
 parser.add_argument('-ct', '--contaTargets', default = 0.05, help='Contamination parameter for the AberrantTargets function')
 parser.add_argument('-sT', '--scoreThreshold', type=int, default=10, help='Threshold on the localisation score')
-parser.add_argument('-aT', '--ampThreshold', type=float, default=1.2, help='Threshold on the amplification ratio')
 parser.add_argument('-rS', '--regSample', type=str, default=None, help='A pattern for removing controls')
 parser.add_argument('-rT', '--regTargets', type=str, default=None, help='A pattern for removing targets')
 parser.add_argument('-v', '--verbose', type=bool, default=True, help='A boolean')
 parser.add_argument('-a', '--autoOpen', type=bool, default=True, help='A boolean')
 parser.add_argument('-r', '--run', type=str, default="ifCNV", help='The name of the experiment')
+parser.add_argument('-sv', '--save', type=bool, default=False, help='A boolean, if True, saves the results in a .tsv file')
 args = parser.parse_args()
 
 # Create or open the reads matrix
@@ -398,6 +398,13 @@ else:
 # Filter the reads matrix
 filteredReads, filteredS, filteredT = filterReads(reads=reads, N=args.minReads, regtar=args.regTargets, regsamp=args.regSample)
 
+if args.verbose:
+    if len(filteredS)>0:
+        print("Filtered samples:")
+        for i in filteredS:
+            print(i)
+
+
 # Normalize the reads matrix
 normReads = normalizeReads(filteredReads)
 
@@ -406,6 +413,10 @@ CNVpos, CNVneg = aberrantSamples(filteredReads,conta=args.contaSamples,verbose=a
 
 # Find the aberrant targets
 final = aberrantAmpliconsFinal(filteredReads, normReads, CNVpos, CNVneg, scoreThreshold=args.scoreThreshold, conta=args.contaTargets, mode=args.mode, run=args.run, verbose=args.verbose)
+
+if args.save==True:
+    final.to_csv(args.output+"/"+args.run+".tsv",sep="\t")
+
 
 # Generate the report
 generateReport(final, output_dir=args.output, reads=normReads)
