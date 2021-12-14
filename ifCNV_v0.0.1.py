@@ -374,7 +374,8 @@ parser.add_argument('-sT', '--scoreThreshold', type=int, default=10, help='Thres
 parser.add_argument('-aT', '--ampThreshold', type=float, default=1.2, help='Threshold on the amplification ratio')
 parser.add_argument('-rS', '--regSample', type=str, default=None, help='A pattern for removing controls')
 parser.add_argument('-rT', '--regTargets', type=str, default=None, help='A pattern for removing targets')
-parser.add_argument('-v', '--verbose', type=str, default=True, help='A boolean')
+parser.add_argument('-v', '--verbose', type=bool, default=True, help='A boolean')
+parser.add_argument('-a', '--autoOpen', type=bool, default=True, help='A boolean')
 parser.add_argument('-r', '--run', type=str, default="ifCNV", help='The name of the experiment')
 args = parser.parse_args()
 
@@ -397,14 +398,14 @@ generateReport(final, output_dir=args.output, reads=normReads)
 if args.verbose:
     print("ifCNV analysis done succesfully !\n")
 
-
-try:
-    os.startfile(args.output+"/run.html")
-except AttributeError:
+if args.autoOpen:
     try:
-        subprocess.call(['open', args.output+"/run.html"])
-    except:
-        print('Could not open URL')
+        os.startfile(args.output+"/run.html")
+    except AttributeError:
+        try:
+            subprocess.call(['open', args.output+"/run.html"])
+        except:
+            print('Could not open URL')
 
 
 
