@@ -80,7 +80,7 @@ def generateGraph(sample,output_dir,reads,region):
 
     col=[]
     for i in reads.index:
-        if i.startswith(region):
+        if i.startswith(region+"_"):
             col.append("red")
         else:
             col.append("black")
