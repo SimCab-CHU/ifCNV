@@ -398,7 +398,13 @@ if args.verbose:
     print("ifCNV analysis done succesfully !\n")
 
 
-
+try:
+    os.startfile(args.output+"/run.html")
+except AttributeError:
+    try:
+        subprocess.call(['open', args.output+"/run.html"])
+    except:
+        print('Could not open URL')
 
 
 
