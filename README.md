@@ -3,6 +3,7 @@
 **Dependencies:**
 
 ```
+Bedtools
 os
 re
 numpy
