@@ -266,7 +266,12 @@ def normalizeReads(reads):
     return(reads_norm)
 
 
-def aberrantSamples(reads,conta='auto',verbose=True):    
+def aberrantSamples(reads,conta='auto',verbose=True):
+    if conta is not 'auto' and not 'none':
+        conta = float(conta)
+    if conta == 'none':
+        conta = 1/reads.shape[1]
+    
     tmp = np.percentile(reads, 99, axis = 0)/np.mean(reads, axis = 0)
     random_data = np.array(tmp).reshape(-1,1)
     clf = IsolationForest(contamination=conta).fit(random_data)
@@ -297,7 +302,12 @@ def aberrantSamples(reads,conta='auto',verbose=True):
 
 
 def aberrantAmpliconsPerSample(name,reads_norm,CNVneg,conta=0.01):
-    random_data = np.array(reads_norm[name])#.reshape(-1,1)
+    if conta is not 'auto':
+        if conta != 'none':
+            conta = float(conta)        
+    if conta == 'none':
+        conta = 1/reads.shape[1]
+    random_data = np.array(reads_norm[name])
     random_data = replaceZeroes(random_data)
     norm = np.array(np.mean(reads_norm[CNVneg], axis = 1))
     norm = replaceZeroes(norm)
@@ -379,20 +389,25 @@ parser.add_argument('-a', '--autoOpen', type=bool, default=True, help='A boolean
 parser.add_argument('-r', '--run', type=str, default="ifCNV", help='The name of the experiment')
 args = parser.parse_args()
 
-
+# Create or open the reads matrix
 if args.skip is None:
     reads = createReadsMatrix(pathToBam=args.input, bedFile=args.bed, pathToBedtools=args.bedtools, verbose=args.verbose, output=args.readsMatrixOuptut)
 else:
     reads = pd.read_csv(args.skip, sep="\t", index_col=0)
-
+    
+# Filter the reads matrix
 filteredReads, filteredS, filteredT = filterReads(reads=reads, N=args.minReads, regtar=args.regTargets, regsamp=args.regSample)
 
+# Normalize the reads matrix
 normReads = normalizeReads(filteredReads)
 
+# Find the aberrant samples
 CNVpos, CNVneg = aberrantSamples(filteredReads,conta=args.contaSamples,verbose=args.verbose)
 
+# Find the aberrant targets
 final = aberrantAmpliconsFinal(filteredReads, normReads, CNVpos, CNVneg, scoreThreshold=args.scoreThreshold, conta=args.contaTargets, mode=args.mode, run=args.run, verbose=args.verbose)
 
+# Generate the report
 generateReport(final, output_dir=args.output, reads=normReads)
 
 if args.verbose:
