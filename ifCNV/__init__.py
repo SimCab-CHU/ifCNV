@@ -27,10 +27,8 @@ import os
 import re
 import numpy as np
 import pandas as pd
-import argparse
 import subprocess
 import io
-import argparse
 from sklearn.ensemble import IsolationForest
 import plotly
 import plotly.graph_objs as go
@@ -45,9 +43,9 @@ def generateReport(final, output_dir, reads):
         cmd = ["mkdir", output_dir]
         subprocess.check_output(cmd)
 
-    cmd = ["cp", "-r", "/Users/admin/Documents/CNV/ressources", output_dir]
+    cmd = ["cp", "-r", "/Users/Charles/Documents/codes/ifCNV/ressources", output_dir]
     subprocess.check_output(cmd)
-    
+
     output_report = output_dir+"/run.html"
     html = getTemplate()
 
@@ -93,7 +91,7 @@ def generateGraph(sample,output_dir,reads,region):
     )]
     layout = go.Layout(
             yaxis=dict(
-                title='Nomalized reads ratio',  
+                title='Nomalized reads ratio',
             ),
             plot_bgcolor='rgb(240,240,240)'
         )
@@ -211,7 +209,7 @@ def createReadsMatrix(pathToBam, bedFile, pathToBedtools, output=None, verbose=F
     cmd = ["ls", pathToBam]
     res = subprocess.check_output(cmd)
     final=pd.DataFrame()
-    
+
     for i in res.decode('utf-8').split("\n"):
         if i.endswith(".bam"):
             if verbose==True:
@@ -267,44 +265,44 @@ def normalizeReads(reads):
 
 
 def aberrantSamples(reads,conta='auto',verbose=True):
-    if conta is not 'auto' and not 'none':
+    if conta != 'auto' and conta != 'none':
         conta = float(conta)
     if conta == 'none':
         conta = 1/reads.shape[1]
-    
+
     tmp = np.percentile(reads, 99, axis = 0)/np.mean(reads, axis = 0)
     random_data = np.array(tmp).reshape(-1,1)
     clf = IsolationForest(contamination=conta).fit(random_data)
     preds = clf.predict(random_data)
     res_amp = np.array(reads.columns)[preds==-1]
-    
+
     tmp = np.percentile(reads, 1, axis = 0)/np.mean(reads, axis = 0)
     random_data = np.array(tmp).reshape(-1,1)
     clf = IsolationForest(contamination=conta).fit(random_data)
     preds = clf.predict(random_data)
     res_del = np.array(reads.columns)[preds==-1]
-    
+
     res = np.unique(np.concatenate((res_amp,res_del)))
     norm = np.array(reads.columns[~np.in1d(reads.columns,res)])
-    
+
     if verbose:
         print("Aberrant sample(s): \n")
         for i in res:
             print("\t"+i+"\n")
-         
+
         print("Normal sample(s): \n")
         for i in norm:
             print("\t"+i+"\n")
-             
-    
+
+
     return(res, norm)
 
 
 
 def aberrantAmpliconsPerSample(name,reads_norm,CNVneg,conta=0.01):
-    if conta is not 'auto':
+    if conta != 'auto':
         if conta != 'none':
-            conta = float(conta)        
+            conta = float(conta)
     if conta == 'none':
         conta = 1/reads.shape[1]
     random_data = np.array(reads_norm[name])
@@ -336,7 +334,7 @@ def amplifEvalGene(reads_norm,region,CNVneg,sample):
 
 def aberrantAmpliconsFinal(reads, reads_norm, CNVpos, CNVneg, scoreThreshold=10,conta=0.01,mode="fast",run="ifCNV",verbose=True):
     f = pd.DataFrame(columns=["Run","Sample name","Region","Reads ratio","Score"])
-        
+
     if mode=="extensive":
         samples = [*CNVpos,*CNVneg]
     if mode=="fast":
@@ -368,77 +366,47 @@ def aberrantAmpliconsFinal(reads, reads_norm, CNVpos, CNVneg, scoreThreshold=10,
 ###########################################
 #               MAIN                      #
 ###########################################
+def main(args):
+    # Create or open the reads matrix
+    if args.skip is None:
+        reads = createReadsMatrix(pathToBam=args.input, bedFile=args.bed, pathToBedtools=args.bedtools, verbose=args.verbose, output=args.readsMatrixOuptut)
+    else:
+        reads = pd.read_csv(args.skip, sep="\t", index_col=0)
 
-parser = argparse.ArgumentParser(description='ifCNV')
-parser.add_argument('-i', '--input', type=str, help='Path to the input bam folder')
-parser.add_argument('-b', '--bed', type=str, help='Path to the bed file')
-parser.add_argument('-t', '--bedtools', type=str, help='Path to bedtools')
-parser.add_argument('-o', '--output', type=str, help='Path to the output report')
-parser.add_argument('-s', '--skip', type=str, default=None, help='A path to the reads matrix')
-parser.add_argument('-m', '--mode', type=str, default='fast', help='fast or extensive')
-parser.add_argument('-rm', '--readsMatrixOuptut', type=str, default=None, help='A path to a file to export the reads matrix as a .tsv file')
-parser.add_argument('-min', '--minReads', type=int, default=100, help='Min mean reads per target')
-parser.add_argument('-cs', '--contaSamples', default = "auto", help='Contamination parameter for the AberrantSamples function')
-parser.add_argument('-ct', '--contaTargets', default = 0.05, help='Contamination parameter for the AberrantTargets function')
-parser.add_argument('-sT', '--scoreThreshold', type=int, default=10, help='Threshold on the localisation score')
-parser.add_argument('-rS', '--regSample', type=str, default=None, help='A pattern for removing controls')
-parser.add_argument('-rT', '--regTargets', type=str, default=None, help='A pattern for removing targets')
-parser.add_argument('-v', '--verbose', type=bool, default=True, help='A boolean')
-parser.add_argument('-a', '--autoOpen', type=bool, default=True, help='A boolean')
-parser.add_argument('-r', '--run', type=str, default="ifCNV", help='The name of the experiment')
-parser.add_argument('-sv', '--save', type=bool, default=False, help='A boolean, if True, saves the results in a .tsv file')
-args = parser.parse_args()
+    # Filter the reads matrix
+    filteredReads, filteredS, filteredT = filterReads(reads=reads, N=args.minReads, regtar=args.regTargets, regsamp=args.regSample)
 
-# Create or open the reads matrix
-if args.skip is None:
-    reads = createReadsMatrix(pathToBam=args.input, bedFile=args.bed, pathToBedtools=args.bedtools, verbose=args.verbose, output=args.readsMatrixOuptut)
-else:
-    reads = pd.read_csv(args.skip, sep="\t", index_col=0)
-    
-# Filter the reads matrix
-filteredReads, filteredS, filteredT = filterReads(reads=reads, N=args.minReads, regtar=args.regTargets, regsamp=args.regSample)
-
-if args.verbose:
-    if len(filteredS)>0:
-        print("Filtered samples:")
-        for i in filteredS:
-            print(i)
+    if args.verbose:
+        if len(filteredS)>0:
+            print("Filtered samples:")
+            for i in filteredS:
+                print(i)
 
 
-# Normalize the reads matrix
-normReads = normalizeReads(filteredReads)
+    # Normalize the reads matrix
+    normReads = normalizeReads(filteredReads)
 
-# Find the aberrant samples
-CNVpos, CNVneg = aberrantSamples(filteredReads,conta=args.contaSamples,verbose=args.verbose)
+    # Find the aberrant samples
+    CNVpos, CNVneg = aberrantSamples(filteredReads,conta=args.contaSamples,verbose=args.verbose)
 
-# Find the aberrant targets
-final = aberrantAmpliconsFinal(filteredReads, normReads, CNVpos, CNVneg, scoreThreshold=args.scoreThreshold, conta=args.contaTargets, mode=args.mode, run=args.run, verbose=args.verbose)
+    # Find the aberrant targets
+    final = aberrantAmpliconsFinal(filteredReads, normReads, CNVpos, CNVneg, scoreThreshold=args.scoreThreshold, conta=args.contaTargets, mode=args.mode, run=args.run, verbose=args.verbose)
 
-if args.save==True:
-    final.to_csv(args.output+"/"+args.run+".tsv",sep="\t")
+    if args.save==True:
+        final.to_csv(args.output+"/"+args.run+".tsv",sep="\t")
 
 
-# Generate the report
-generateReport(final, output_dir=args.output, reads=normReads)
+    # Generate the report
+    generateReport(final, output_dir=args.output, reads=normReads)
 
-if args.verbose:
-    print("ifCNV analysis done succesfully !\n")
+    if args.verbose:
+        print("ifCNV analysis done succesfully !\n")
 
-if args.autoOpen:
-    try:
-        os.startfile(args.output+"/run.html")
-    except AttributeError:
+    if args.autoOpen:
         try:
-            subprocess.call(['open', args.output+"/run.html"])
-        except:
-            print('Could not open URL')
-
-
-
-
-
-
-
-
-
-
+            os.startfile(args.output+"/run.html")
+        except AttributeError:
+            try:
+                subprocess.call(['open', args.output+"/run.html"])
+            except:
+                print('Could not open URL')
