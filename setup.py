@@ -6,7 +6,7 @@
 __author__ = 'Simon Cabello'
 __copyright__ = 'Copyright (C) 2021'
 __license__ = 'GNU General Public License'
-__version__ = '0.0.2a20'
+__version__ = '0.1.0'
 __email__ = 's-cabelloaguilar@chu-montpellier.fr'
 __status__ = 'prod'
 
