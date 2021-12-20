@@ -18,7 +18,7 @@
 __author__ = 'Simon Cabello'
 __copyright__ = 'Copyright (C) 2021'
 __license__ = 'GNU General Public License'
-__version__ = '0.2.0'
+__version__ = '0.2.1'
 __email__ = 's-cabelloaguilar@chu-montpellier.fr'
 __status__ = 'prod'
 
@@ -28,15 +28,16 @@ import re
 import numpy as np
 import pandas as pd
 import subprocess
-import io
 from sklearn.ensemble import IsolationForest
 import plotly
 import plotly.graph_objs as go
 from pybedtools import BedTool
 
+
 ###########################################
 #               FUNCTIONS                 #
 ###########################################
+
 
 def generateReport(final, output_dir, reads, ressources, CNVneg):
     if not os.path.isdir(output_dir):
@@ -46,11 +47,11 @@ def generateReport(final, output_dir, reads, ressources, CNVneg):
     cmd = ["cp", "-r", ressources, output_dir]
     subprocess.check_output(cmd)
 
-    output_report = output_dir+"/run.html"
+    output_report = f"{output_dir}/run.html"
     html = getTemplate()
 
     for i in final.index:
-        fff=final.loc[i]
+        fff = final.loc[i]
 
         run = fff['Run']
         sample = fff['Sample name']
@@ -58,45 +59,55 @@ def generateReport(final, output_dir, reads, ressources, CNVneg):
 
         generateGraph(sample, output_dir, reads, region, CNVneg)
 
-        ratio = str(round(fff['Reads ratio'],2))
-        score = str(round(fff['Score'],2))
+        ratio = str(round(fff['Reads ratio'], 2))
+        score = str(round(fff['Score'], 2))
 
-        html = html.replace('<!--ADD RUN-->','<!--ADD RUN-->'+'\n'+'\t'+'\t'+'\t'+'<!--ADD RUN-->')
+        html = html.replace('<!--ADD RUN-->', '<!--ADD RUN-->\n\t\t\t<!--ADD RUN-->')
 
-        torep = "<tr url="+"\""+sample+'_'+region+".html\" "+"""style="cursor: pointer;"><td>"""+run+"</td><td>"""+sample+"</td><td>"""+region+"</td><td>"""+ratio+"</td><td>"""+score+"</td></tr>"
-        html = html.replace('<!--ADD RUN-->',torep,1)
+        torep = (
+            f'<tr url="{sample}_{region}.html" style="cursor: pointer;">'
+            f'<td>{run}</td>'
+            f'<td>{sample}</td>'
+            f'<td>{region}</td>'
+            f'<td>{ratio}</td>'
+            f'<td>{score}</td></tr>'
+        )
+        html = html.replace('<!--ADD RUN-->', torep, 1)
         with open(output_report, "w") as FH_out:
             FH_out.write(html)
 
-def generateGraph(sample,output_dir,reads,region, CNVneg):
-    dfneg = np.mean(reads[CNVneg],axis=1)
+
+def generateGraph(sample, output_dir, reads, region, CNVneg):
+    dfneg = np.mean(reads[CNVneg], axis=1)
     dfpos = reads[sample]
 
-    df = np.log2(np.array(dfpos)/np.array(dfneg))
+    df = np.log2(np.array(dfpos) / np.array(dfneg))
 
     genes = [i.split("_")[0] for i in reads.index]
 
-    col=[]
+    col = []
     for i in reads.index:
-        if i.startswith(region+"_"):
+        if i.startswith(f"{region}_"):
             col.append("red")
         else:
             col.append("black")
 
     data = [go.Scatter(
-        x = genes,
-        y = df,
-        mode = 'markers',
-        marker=dict(color=col,size=10),
+        x=genes,
+        y=df,
+        mode='markers',
+        marker=dict(color=col, size=10)
     )]
     layout = go.Layout(
-            yaxis=dict(
-                title='Nomalized reads ratio',
-            ),
-            plot_bgcolor='rgb(240,240,240)'
-        )
+        yaxis=dict(title='Nomalized reads ratio'),
+        plot_bgcolor='rgb(240,240,240)'
+    )
     fig = go.Figure(data=data, layout=layout)
-    plotly.offline.plot(fig,filename=output_dir+'/'+sample+'_'+region+'.html', auto_open = False)
+    plotly.offline.plot(
+        fig,
+        filename=f"{output_dir}/{sample}_{region}.html",
+        auto_open=False
+    )
 
 
 def getTemplate():
@@ -197,12 +208,13 @@ def getTemplate():
 
 </html>
     """
-    return(html)
+    return html
+
 
 def replaceZeroes(data):
     min_nonzero = np.min(data[np.nonzero(data)])
     data[data == 0] = min_nonzero
-    return(data)
+    return data
 
 
 def createReadsMatrix(pathToBam, bedFile, output=None, verbose=False):
@@ -214,150 +226,149 @@ def createReadsMatrix(pathToBam, bedFile, output=None, verbose=False):
 
     for i in res.decode('utf-8').split("\n"):
         if i.endswith(".bam"):
-            if verbose==True:
-                print("Processing sample "+i[:-4]+"...")
+            sampleName = i[:-4]
+            if verbose:
+                print(f"Processing sample {sampleName}...")
             try:
                 pathBam = pathToBam + "/" + i
                 data = bed.multi_bam_coverage(bams=pathBam)
                 df = data.to_dataframe()
-                nam = i[:-4]
-                final[nam] = df[df.keys()[len(df.columns)-1]]
-                if verbose==True:
-                    print(i[:-4]+" Done \n")
+                final[sampleName] = df[df.keys()[len(df.columns) - 1]]
+                if verbose:
+                    print(f"{sampleName} Done \n")
             except subprocess.CalledProcessError:
-                print(i[:-4] + ": skipped")
+                print(f"{sampleName} : skipped")
                 print("Hint: Index file (.bai) must be present in the folder \n")
 
     final.index = list(df["name"])
 
     if output is not None:
-        if verbose==True:
+        if verbose:
             print("Reads matrix created !")
-        final.to_csv(output,sep="\t")
+        final.to_csv(output, sep="\t")
 
-    return(final)
+    return final
 
 
-def filterReads(reads,N,regtar=None,regsamp=None):
+def filterReads(reads, N, regtar=None, regsamp=None):
     col = reads.columns
     rows = reads.index
     if regtar is not None:
-        reads = reads.filter(regex=regtar,axis=0)
+        reads = reads.filter(regex=regtar, axis=0)
     if regsamp is not None:
-        reads = reads.filter(regex="^(?!"+regsamp+")")
-    reads = reads.filter(regex="^(?!MSI)",axis=0)
+        reads = reads.filter(regex=f"^(?!{regsamp})")
+    reads = reads.filter(regex="^(?!MSI)", axis=0)
     reads = reads.filter(regex="^(?!TN)")
     reads = reads.filter(regex="^(?!TP)")
     reads = reads.filter(regex="^(?!HD)")
     reads = reads.filter(regex="^(?!H2)")
-    reads = reads.loc[reads.sum(axis=1)/len(reads.columns)>N,:]
-    filtered_samples = col[~np.in1d(col,reads.columns)]
-    filtered_targets = rows[~np.in1d(rows,reads.index)]
-    return(reads, filtered_samples, filtered_targets)
+    reads = reads.loc[reads.sum(axis=1) / len(reads.columns) > N, :]
+    filtered_samples = col[~np.in1d(col, reads.columns)]
+    filtered_targets = rows[~np.in1d(rows, reads.index)]
+    return (reads, filtered_samples, filtered_targets)
 
 
 def normalizeReads(reads):
-    reads_norm=reads/reads.sum(axis=0)
-    return(reads_norm)
+    reads_norm = reads / reads.sum(axis=0)
+    return reads_norm
 
 
-def aberrantSamples(reads,conta='auto',verbose=True):
+def aberrantSamples(reads, conta='auto', verbose=True):
     if conta != 'auto' and conta != 'none':
         conta = float(conta)
     if conta == 'none':
-        conta = 1/reads.shape[1]
+        conta = 1 / reads.shape[1]
 
-    tmp = np.percentile(reads, 99, axis = 0)/np.mean(reads, axis = 0)
-    random_data = np.array(tmp).reshape(-1,1)
+    tmp = np.percentile(reads, 99, axis=0) / np.mean(reads, axis=0)
+    random_data = np.array(tmp).reshape(-1, 1)
     clf = IsolationForest(contamination=conta).fit(random_data)
     preds = clf.predict(random_data)
-    res_amp = np.array(reads.columns)[preds==-1]
+    res_amp = np.array(reads.columns)[preds == -1]
 
-    tmp = np.percentile(reads, 1, axis = 0)/np.mean(reads, axis = 0)
-    random_data = np.array(tmp).reshape(-1,1)
+    tmp = np.percentile(reads, 1, axis=0) / np.mean(reads, axis=0)
+    random_data = np.array(tmp).reshape(-1, 1)
     clf = IsolationForest(contamination=conta).fit(random_data)
     preds = clf.predict(random_data)
-    res_del = np.array(reads.columns)[preds==-1]
+    res_del = np.array(reads.columns)[preds == -1]
 
-    res = np.unique(np.concatenate((res_amp,res_del)))
-    norm = np.array(reads.columns[~np.in1d(reads.columns,res)])
+    res = np.unique(np.concatenate((res_amp, res_del)))
+    norm = np.array(reads.columns[~np.in1d(reads.columns, res)])
 
     if verbose:
         print("Aberrant sample(s): \n")
         for i in res:
-            print("\t"+i+"\n")
+            print(f"\t{i}\n")
 
         print("Normal sample(s): \n")
         for i in norm:
-            print("\t"+i+"\n")
+            print(f"\t{i}\n")
+
+    return (res, norm)
 
 
-    return(res, norm)
-
-
-
-def aberrantAmpliconsPerSample(name,reads_norm,CNVneg,conta=0.01):
+def aberrantAmpliconsPerSample(name, reads_norm, CNVneg, conta=0.01):
     if conta != 'auto':
         if conta != 'none':
             conta = float(conta)
     if conta == 'none':
-        conta = 1/reads.shape[1]
+        conta = 1 / reads.shape[1]
     random_data = np.array(reads_norm[name])
     random_data = replaceZeroes(random_data)
-    norm = np.array(np.mean(reads_norm[CNVneg], axis = 1))
+    norm = np.array(np.mean(reads_norm[CNVneg], axis=1))
     norm = replaceZeroes(norm)
-    df = np.log2(random_data/norm)
-    clf = IsolationForest(contamination=conta).fit(df.reshape(-1,1))
-    preds = clf.predict(df.reshape(-1,1))
-    return(np.array(reads_norm.index)[preds==-1])
+    df = np.log2(random_data / norm)
+    clf = IsolationForest(contamination=conta).fit(df.reshape(-1, 1))
+    preds = clf.predict(df.reshape(-1, 1))
+
+    return np.array(reads_norm.index)[preds == -1]
 
 
-def scoreAmplif(k,n,N):
-    p = n/N
-    x = np.log(1/((p**k)*(1-p)**(n-k)))*(k/n)
+def scoreAmplif(k, n, N):
+    p = n / N
+    x = np.log(1 / ((p**k) * (1 - p)**(n - k))) * (k / n)
     return x
 
 
-def amplifEvalGene(reads_norm,region,CNVneg,sample):
-    reads_m = reads_norm.filter(regex="^"+region,axis=0)
+def amplifEvalGene(reads_norm, region, CNVneg, sample):
+    reads_m = reads_norm.filter(regex=f"^{region}", axis=0)
     pos = np.array(reads_m[sample])
-    norm = np.array(np.mean(reads_m[CNVneg], axis = 1))
-    df = pos/norm
+    norm = np.array(np.mean(reads_m[CNVneg], axis=1))
+    df = pos / norm
     val = np.mean(df)
-    if val==np.inf:
+    if val == np.inf:
         val = 100
+
     return val
 
 
-def aberrantAmpliconsFinal(reads, reads_norm, CNVpos, CNVneg, scoreThreshold=10,conta=0.01,mode="fast",run="ifCNV",verbose=True):
-    f = pd.DataFrame(columns=["Run","Sample name","Region","Reads ratio","Score"])
+def aberrantAmpliconsFinal(reads, reads_norm, CNVpos, CNVneg, scoreThreshold=10, conta=0.01, mode="fast", run="ifCNV", verbose=True):
+    f = pd.DataFrame(columns=["Run", "Sample name", "Region", "Reads ratio", "Score"])
 
-    if mode=="extensive":
-        samples = [*CNVpos,*CNVneg]
-    if mode=="fast":
+    if mode == "extensive":
+        samples = [*CNVpos, *CNVneg]
+    if mode == "fast":
         samples = CNVpos
 
-    q=0
+    q = 0
     for name in samples:
-        abAmp = aberrantAmpliconsPerSample(name,reads_norm,CNVneg,conta=conta)
-        if abAmp.shape!=(0,):
+        abAmp = aberrantAmpliconsPerSample(name, reads_norm, CNVneg, conta=conta)
+        if abAmp.shape != (0, ):
             genes = np.unique([i.split('_')[0] for i in abAmp])
             for gene in genes:
                 r = re.compile(gene)
                 abEx = list(filter(r.match, abAmp))
-                exons1 = [i.split('_')[0]+"_"+i.split('_')[1] for i in abEx]
-                tmp = reads.filter(regex="^"+gene,axis=0)
-                exons2 = [i.split('_')[0]+"_"+i.split('_')[1] for i in tmp.index]
+                tmp = reads.filter(regex=f"^{gene}", axis=0)
 
-                score = scoreAmplif(len(abEx),tmp.shape[0],reads.shape[0])
+                score = scoreAmplif(len(abEx), tmp.shape[0], reads.shape[0])
                 amplif = amplifEvalGene(reads_norm, gene, CNVneg, name)
 
-                if score>scoreThreshold:
-                    f.loc[q] = [run,name,gene,amplif,score]
-                    q=q+1
+                if score > scoreThreshold:
+                    f.loc[q] = [run, name, gene, amplif, score]
+                    q = q + 1
     if verbose:
-        print(str(f.shape[0])+" aberrant regions found in "+str(len(np.unique(f['Sample name'])))+" samples.\n")
-    return(f)
+        print(f"{str(f.shape[0])} aberrant regions found in {str(len(np.unique(f['Sample name'])))} samples.\n")
+
+    return f
 
 
 ###########################################
@@ -365,7 +376,7 @@ def aberrantAmpliconsFinal(reads, reads_norm, CNVpos, CNVneg, scoreThreshold=10,
 ###########################################
 def main(args):
     if args.lib_ressources is None:
-        lib_ressources = os.path.dirname(os.path.abspath(__file__))+"/ressources"
+        lib_ressources = f"{os.path.dirname(os.path.abspath(__file__))}/ressources"
     else:
         lib_ressources = args.lib_ressources
     # Create or open the reads matrix
@@ -378,27 +389,25 @@ def main(args):
     filteredReads, filteredS, filteredT = filterReads(reads=reads, N=args.minReads, regtar=args.regTargets, regsamp=args.regSample)
 
     if args.verbose:
-        if len(filteredS)>0:
+        if len(filteredS) > 0:
             print("Filtered samples:")
             for i in filteredS:
                 print(i)
-
 
     # Normalize the reads matrix
     normReads = normalizeReads(filteredReads)
 
     # Find the aberrant samples
-    CNVpos, CNVneg = aberrantSamples(filteredReads,conta=args.contaSamples,verbose=args.verbose)
+    CNVpos, CNVneg = aberrantSamples(filteredReads, conta=args.contaSamples, verbose=args.verbose)
 
     # Find the aberrant targets
     final = aberrantAmpliconsFinal(filteredReads, normReads, CNVpos, CNVneg, scoreThreshold=args.scoreThreshold, conta=args.contaTargets, mode=args.mode, run=args.run, verbose=args.verbose)
 
-    if args.save==True:
+    if args.save:
         if not os.path.isdir(args.output):
             cmd = ["mkdir", args.output]
             subprocess.check_output(cmd)
-        final.to_csv(args.output+"/"+args.run+".tsv",sep="\t")
-
+        final.to_csv(f"{args.output}/{args.run}.tsv", sep="\t")
 
     # Generate the report
     generateReport(final, output_dir=args.output, reads=normReads, ressources=lib_ressources, CNVneg=CNVneg)
@@ -408,9 +417,9 @@ def main(args):
 
     if args.autoOpen:
         try:
-            os.startfile(args.output+"/run.html")
+            os.startfile(f"{args.output}/run.html")
         except AttributeError:
             try:
-                subprocess.call(['open', args.output+"/run.html"])
+                subprocess.call(['open', f"{args.output}/run.html"])
             except:
                 print('Could not open URL')
