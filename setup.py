@@ -6,7 +6,7 @@
 __author__ = 'Simon Cabello'
 __copyright__ = 'Copyright (C) 2021'
 __license__ = 'GNU General Public License'
-__version__ = '1.0.0'
+__version__ = '0.0.2a20'
 __email__ = 's-cabelloaguilar@chu-montpellier.fr'
 __status__ = 'prod'
 
@@ -25,18 +25,23 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/SimCab-CHU/ifCNV",
     packages=setuptools.find_packages(),
+    include_package_data=True,
     classifiers=[
         "Programming Language :: Python :: 3",
-        "Operating System :: OS Independent",
+        "Operating System :: MacOS :: MacOS X",
+        "Operating System :: POSIX :: Linux",
         "Development Status :: 5 - Production/Stable",
         "Programming Language :: Python :: Implementation :: PyPy",
         "Topic :: Scientific/Engineering :: Bio-Informatics",
+        "Topic :: Scientific/Engineering :: Artificial Intelligence",
+        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)"
     ],
     install_requires=[
         'numpy>=1.21',
         'pandas>=1.3',
         'scikit-learn>=1.0.1',
-        'plotly>=5.4'
+        'plotly>=5.4',
+        "pybedtools>=0.8.2"
     ],
     scripts=['script/ifCNV'],
     project_urls={  # Optional
