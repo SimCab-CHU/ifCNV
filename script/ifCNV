@@ -1,0 +1,158 @@
+#!/usr/bin/env python3
+#
+# Copyright (C) 2021
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+__author__ = 'Simon Cabello'
+__copyright__ = 'Copyright (C) 2021'
+__license__ = 'GNU General Public License'
+__version__ = '0.2.1'
+__email__ = 's-cabelloaguilar@chu-montpellier.fr'
+__status__ = 'prod'
+
+import ifCNV
+import argparse
+
+###############################################################################
+#
+# MAIN
+#
+###############################################################################
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='ifCNV')
+
+    group_mandatory = parser.add_argument_group('Mandatory')
+    group_mandatory.add_argument(
+        '-i',
+        '--input',
+        type=str,
+        help='Path to the input bam folder',
+        required=True
+    )
+    group_mandatory.add_argument(
+        '-b',
+        '--bed',
+        type=str,
+        help='Path to the bed file',
+        required=True
+    )
+    group_mandatory.add_argument(
+        '-o',
+        '--output',
+        type=str,
+        help='Path to the output report',
+        required=True
+    )
+
+    parser.add_argument(
+        '-s',
+        '--skip',
+        type=str,
+        default=None,
+        help='A path to the reads matrix'
+    )
+    parser.add_argument(
+        '-m',
+        '--mode',
+        type=str,
+        default='fast',
+        help='fast or extensive'
+    )
+    parser.add_argument(
+        '-rm',
+        '--readsMatrixOuptut',
+        type=str,
+        default=None,
+        help='A path to a file to export the reads matrix as a .tsv file'
+    )
+    parser.add_argument(
+        '-min',
+        '--minReads',
+        type=int,
+        default=100,
+        help='Min mean reads per target'
+    )
+    parser.add_argument(
+        '-cs',
+        '--contaSamples',
+        default="auto",
+        help='Contamination parameter for the AberrantSamples function'
+    )
+    parser.add_argument(
+        '-ct',
+        '--contaTargets',
+        default=0.05,
+        help='Contamination parameter for the AberrantTargets function'
+    )
+    parser.add_argument(
+        '-sT',
+        '--scoreThreshold',
+        type=int,
+        default=10,
+        help='Threshold on the localisation score'
+    )
+    parser.add_argument(
+        '-rS',
+        '--regSample',
+        type=str,
+        default=None,
+        help='A pattern for removing controls'
+    )
+    parser.add_argument(
+        '-rT',
+        '--regTargets',
+        type=str,
+        default=None,
+        help='A pattern for removing targets'
+    )
+    parser.add_argument(
+        '-v',
+        '--verbose',
+        type=bool,
+        default=True,
+        help='A boolean'
+    )
+    parser.add_argument(
+        '-a',
+        '--autoOpen',
+        type=bool,
+        default=True,
+        help='A boolean'
+    )
+    parser.add_argument(
+        '-r',
+        '--run',
+        type=str,
+        default="ifCNV",
+        help='The name of the experiment'
+    )
+    parser.add_argument(
+        '-sv',
+        '--save',
+        type=bool,
+        default=False,
+        help='A boolean, if True, saves the results in a .tsv file'
+    )
+    parser.add_argument(
+        '-l',
+        '--lib-ressources',
+        type=str,
+        default=None,
+        help='Path where lib to import for report.'
+    )
+
+    args = parser.parse_args()
+    ifCNV.main(args)
