@@ -18,7 +18,7 @@
 __author__ = 'Simon Cabello'
 __copyright__ = 'Copyright (C) 2021'
 __license__ = 'GNU General Public License'
-__version__ = '0.1.0'
+__version__ = '0.2.0'
 __email__ = 's-cabelloaguilar@chu-montpellier.fr'
 __status__ = 'prod'
 
@@ -32,7 +32,7 @@ import io
 from sklearn.ensemble import IsolationForest
 import plotly
 import plotly.graph_objs as go
-
+from pybedtools import BedTool
 
 ###########################################
 #               FUNCTIONS                 #
@@ -205,33 +205,30 @@ def replaceZeroes(data):
     return(data)
 
 
-def createReadsMatrix(pathToBam, bedFile, pathToBedtools, output=None, verbose=False):
+def createReadsMatrix(pathToBam, bedFile, output=None, verbose=False):
     cmd = ["ls", pathToBam]
     res = subprocess.check_output(cmd)
     final = pd.DataFrame()
+
+    bed = BedTool(bedFile)
 
     for i in res.decode('utf-8').split("\n"):
         if i.endswith(".bam"):
             if verbose==True:
                 print("Processing sample "+i[:-4]+"...")
             try:
-                command = [
-                pathToBedtools,
-                "multicov",
-                "-bams", pathToBam+"/"+i,
-                "-bed", bedFile]
-                res = subprocess.check_output(command)
-                data = io.StringIO(res.decode("utf-8"))
-                df = pd.read_csv(data, sep='\t',header=None)
+                pathBam = pathToBam + "/" + i
+                data = bed.multi_bam_coverage(bams=pathBam)
+                df = data.to_dataframe()
                 nam = i[:-4]
-                final[nam] = df[len(df.columns)-1]
+                final[nam] = df[df.keys()[len(df.columns)-1]]
                 if verbose==True:
                     print(i[:-4]+" Done \n")
             except subprocess.CalledProcessError:
                 print(i[:-4] + ": skipped")
                 print("Hint: Index file (.bai) must be present in the folder \n")
 
-    final.index = list(df[3])
+    final.index = list(df["name"])
 
     if output is not None:
         if verbose==True:
@@ -373,7 +370,7 @@ def main(args):
         lib_ressources = args.lib_ressources
     # Create or open the reads matrix
     if args.skip is None:
-        reads = createReadsMatrix(pathToBam=args.input, bedFile=args.bed, pathToBedtools=args.bedtools, verbose=args.verbose, output=args.readsMatrixOuptut)
+        reads = createReadsMatrix(pathToBam=args.input, bedFile=args.bed, verbose=args.verbose, output=args.readsMatrixOuptut)
     else:
         reads = pd.read_csv(args.skip, sep="\t", index_col=0)
 

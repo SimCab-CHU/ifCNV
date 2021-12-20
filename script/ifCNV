@@ -19,7 +19,7 @@
 __author__ = 'Simon Cabello'
 __copyright__ = 'Copyright (C) 2021'
 __license__ = 'GNU General Public License'
-__version__ = '0.1.0'
+__version__ = '0.2.0'
 __email__ = 's-cabelloaguilar@chu-montpellier.fr'
 __status__ = 'prod'
 
@@ -48,13 +48,6 @@ if __name__ == "__main__":
         '--bed',
         type=str,
         help='Path to the bed file',
-        required=True
-    )
-    group_mandatory.add_argument(
-        '-t',
-        '--bedtools',
-        type=str,
-        help='Path to bedtools',
         required=True
     )
     group_mandatory.add_argument(
