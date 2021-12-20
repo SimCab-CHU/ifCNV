@@ -7,7 +7,7 @@
 Make sure you have python >= 3.6
 
 ```sh
-$ python -version
+$ python --version
 Python 3.X.X
 ```
 
