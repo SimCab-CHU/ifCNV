@@ -18,7 +18,7 @@
 __author__ = 'Simon Cabello'
 __copyright__ = 'Copyright (C) 2021'
 __license__ = 'GNU General Public License'
-__version__ = '1.0.0'
+__version__ = '0.1.0'
 __email__ = 's-cabelloaguilar@chu-montpellier.fr'
 __status__ = 'prod'
 
@@ -38,12 +38,12 @@ import plotly.graph_objs as go
 #               FUNCTIONS                 #
 ###########################################
 
-def generateReport(final, output_dir, reads):
+def generateReport(final, output_dir, reads, ressources, CNVneg):
     if not os.path.isdir(output_dir):
         cmd = ["mkdir", output_dir]
         subprocess.check_output(cmd)
 
-    cmd = ["cp", "-r", "/Users/Charles/Documents/codes/ifCNV/ressources", output_dir]
+    cmd = ["cp", "-r", ressources, output_dir]
     subprocess.check_output(cmd)
 
     output_report = output_dir+"/run.html"
@@ -56,7 +56,7 @@ def generateReport(final, output_dir, reads):
         sample = fff['Sample name']
         region = fff['Region']
 
-        generateGraph(sample, output_dir, reads, region)
+        generateGraph(sample, output_dir, reads, region, CNVneg)
 
         ratio = str(round(fff['Reads ratio'],2))
         score = str(round(fff['Score'],2))
@@ -68,7 +68,7 @@ def generateReport(final, output_dir, reads):
         with open(output_report, "w") as FH_out:
             FH_out.write(html)
 
-def generateGraph(sample,output_dir,reads,region):
+def generateGraph(sample,output_dir,reads,region, CNVneg):
     dfneg = np.mean(reads[CNVneg],axis=1)
     dfpos = reads[sample]
 
@@ -208,7 +208,7 @@ def replaceZeroes(data):
 def createReadsMatrix(pathToBam, bedFile, pathToBedtools, output=None, verbose=False):
     cmd = ["ls", pathToBam]
     res = subprocess.check_output(cmd)
-    final=pd.DataFrame()
+    final = pd.DataFrame()
 
     for i in res.decode('utf-8').split("\n"):
         if i.endswith(".bam"):
@@ -367,6 +367,10 @@ def aberrantAmpliconsFinal(reads, reads_norm, CNVpos, CNVneg, scoreThreshold=10,
 #               MAIN                      #
 ###########################################
 def main(args):
+    if args.lib_ressources is None:
+        lib_ressources = os.path.dirname(os.path.abspath(__file__))+"/ressources"
+    else:
+        lib_ressources = args.lib_ressources
     # Create or open the reads matrix
     if args.skip is None:
         reads = createReadsMatrix(pathToBam=args.input, bedFile=args.bed, pathToBedtools=args.bedtools, verbose=args.verbose, output=args.readsMatrixOuptut)
@@ -393,11 +397,14 @@ def main(args):
     final = aberrantAmpliconsFinal(filteredReads, normReads, CNVpos, CNVneg, scoreThreshold=args.scoreThreshold, conta=args.contaTargets, mode=args.mode, run=args.run, verbose=args.verbose)
 
     if args.save==True:
+        if not os.path.isdir(args.output):
+            cmd = ["mkdir", args.output]
+            subprocess.check_output(cmd)
         final.to_csv(args.output+"/"+args.run+".tsv",sep="\t")
 
 
     # Generate the report
-    generateReport(final, output_dir=args.output, reads=normReads)
+    generateReport(final, output_dir=args.output, reads=normReads, ressources=lib_ressources, CNVneg=CNVneg)
 
     if args.verbose:
         print("ifCNV analysis done succesfully !\n")
