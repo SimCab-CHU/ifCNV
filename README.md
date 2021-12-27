@@ -42,11 +42,11 @@ $ ifCNV -i /path/to/bam/directory/ -b /path/to/bed/file -o /path/to/output/direc
 $ ifCNV -i /path/to/bam/directory/ -b /path/to/bed/file -o /path/to/output/directory/ -a ''
 ```
 - if you don't want to re-create the reads matrix of your run at each utilisation (ie. to rerun ifCNV with different parameters)
-First, run ifCNV and write the reads matrix:
+  - First, run ifCNV and write the reads matrix:
 ```sh
 $ ifCNV -i /path/to/bam/directory/ -b /path/to/bed/file -o /path/to/output/directory/ -rm /path/to/readsMatrix/file
 ```
-Then, run ifCNV and tell it to take the reads matrix (it will skip its creation)
+  - Then, run ifCNV and tell it to take the reads matrix (it will skip its creation)
 ```sh
 $ ifCNV -i /path/to/bam/directory/ -b /path/to/bed/file -o /path/to/output/directory/ -s /path/to/readsMatrix/file
 ```
