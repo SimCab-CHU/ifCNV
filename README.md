@@ -46,7 +46,7 @@ $ ifCNV -i /path/to/bam/directory/ -b /path/to/bed/file -o /path/to/output/direc
 ```sh
 $ ifCNV -i /path/to/bam/directory/ -b /path/to/bed/file -o /path/to/output/directory/ -rm /path/to/readsMatrix/file
 ```
-  - Then, run ifCNV and tell it to take the reads matrix (it will skip its creation)
+    - Then, run ifCNV and tell it to take the reads matrix (it will skip its creation)
 ```sh
 $ ifCNV -i /path/to/bam/directory/ -b /path/to/bed/file -o /path/to/output/directory/ -s /path/to/readsMatrix/file
 ```
