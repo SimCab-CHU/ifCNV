@@ -50,7 +50,7 @@ $ ifCNV -i /path/to/bam/directory/ -b /path/to/bed/file -o /path/to/output/direc
 
 $ ifCNV -i /path/to/bam/directory/ -b /path/to/bed/file -o /path/to/output/directory/ -s /path/to/readsMatrix/file
 ```
-- if you want to save the output in a .tsv file
+- if you want to save the output in a .tsv file (it will be written in the output directory)
 ```sh
 $ ifCNV -i /path/to/bam/directory/ -b /path/to/bed/file -o /path/to/output/directory/ -sv True
 ```
