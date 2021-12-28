@@ -85,6 +85,8 @@ Using this .bed file, the resolution will be at the gene level, meaning the five
 Using this .bed file, the resolution will be at the exon level, meaning the 3 first will be considered as belonging to the same region (JAK1-E25) and the 2 last to another region (JAK1-E24) in the calculus of the localisation score.
 
 This implies a careful consideration to the localisation score threshold (-sT). Indeed, the localisation score depends on the size of th region of interest. For example, 3 altered targets on 3 targets of the region of interest will have a smaller localisation score than 10 altered targets on 10 targets of the region of interest (see image below).
+
+
 ![](score_plot.png)
 
 
