@@ -63,7 +63,7 @@ $ ifCNV -i /path/to/bam/directory/ -b /path/to/bed/file -o /path/to/output/direc
 
 ### Resolution
 
-The resolution of ifCNV is the smallest region covered by a target. It is set in the .bed file. The 4th column of the .bed file must be the name of the targeted region. ifCNV splits this name on the "\_" character and regroups whats on the left of it as regio of interest. 
+The resolution of ifCNV is the smallest region covered by a target. It is set in the .bed file. The 4th column of the .bed file must be the name of the targeted region. ifCNV splits this name on the "\_" character and regroups whats on the left of it as the region of interest. 
 
 Exemples:
 ```
