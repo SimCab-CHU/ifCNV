@@ -31,7 +31,7 @@ Basic usage, ifCNV creates the output directory in wich it stores the html repor
 $ ifCNV -i /path/to/bam/directory/ -b /path/to/bed/file -o /path/to/output/directory/
 ```
 
-More specific commands:
+####More specific commands:
 
 - if you want ifCNV to stop talking
 ```sh
