@@ -96,6 +96,6 @@ Changing the -ct parameter of ifCNV can be useful but a careful consideration mu
 
 An example is provided in the paper describing ifCNV using the ICR96 dataset, and is summarized in the figure below:
 
-<img src="figure_5.jpg" alt="drawing" width="500"/>
+<img src="figure_5.jpg" alt="drawing" width="450"/>
 
 
