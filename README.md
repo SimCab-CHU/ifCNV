@@ -94,7 +94,7 @@ ifCNV uses 2 Isolation forests, one to detect the outlying samples (considered a
 
 Changing the -ct parameter of ifCNV can be useful but a careful consideration must be taken on the score threshold (-sT). For example, if the user sets the -ct parameter to a small value (\~ \]0,0.01\]), less targets will be considered as outliers and so the localisation scores will be lower. On the other hand, if the user sets the -ct parameter to a high value (\~ \]0.1,0.5\]), more targets will be considered as outliers and so the localisation scores will be higher.
 
-An example is provided in the paper describing ifCNV and is summarized in the figure below:
+An example is provided in the paper describing ifCNV using the ICR96 dataset, and is summarized in the figure below:
 
 <img src="figure_5.jpg" alt="drawing" width="400"/>
 
