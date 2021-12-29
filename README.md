@@ -84,9 +84,21 @@ Using this .bed file, the resolution will be at the gene level, meaning the five
 ```
 Using this .bed file, the resolution will be at the exon level, meaning the 3 first will be considered as belonging to the same region (JAK1-E25) and the 2 last to another region (JAK1-E24) in the calculus of the localisation score.
 
-This implies a careful consideration to the localisation score threshold (-sT). Indeed, the localisation score depends on the size of th region of interest. For example, 3 altered targets on 3 targets of the region of interest will have a smaller localisation score than 10 altered targets on 10 targets of the region of interest (see image below).
+This implies a careful consideration to the localisation score threshold (-sT). Indeed, the localisation score depends on the size of the region of interest. For example, 3 altered targets on 3 targets of the region of interest will have a smaller localisation score than 10 altered targets on 10 targets of the region of interest (see image below).
 
 
 ![](score_plot.png)
+
+
+### Contamination parameters
+
+ifCNV uses 2 Isolation forests, one to detect the outlying samples (considered as CNV positives) and another to detect the outlying targets. The _contamination_ is a parameter of the isolation forest that defines the proportion of outliers in the data set. It is set for both IF as "auto" by default but can be changed by the user. 
+
+Changing the -ct parameter of ifCNV can be useful but a careful consideration must be taken on the score threshold (-sT). For example, if the user sets the -ct parameter to a small value (~\]0,0.01\]), less targets will be considered as outliers and so the localisation scores will be lower. On the other hand, if the user sets the -ct parameter to a high value (~\]0.1,0.5\]), more targets will be considered as outliers and so the localisation scores will be higher.
+
+An example is provided in the paper describing ifCNV and is summarized in the figure below:
+
+![](figure_5.png)
+
 
 
