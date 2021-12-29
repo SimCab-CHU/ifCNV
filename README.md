@@ -87,8 +87,7 @@ Using this .bed file, the resolution will be at the exon level, meaning the 3 fi
 This implies a careful consideration to the localisation score threshold (-sT). Indeed, the localisation score depends on the size of the region of interest. For example, 3 altered targets on 3 targets of the region of interest will have a smaller localisation score than 10 altered targets on 10 targets of the region of interest (see image below).
 
 
-![](score_plot.png | width=100)
-<img src="score_plot.png" alt="drawing" width="200"/>
+<img src="score_plot.png" alt="drawing" width="400"/>
 
 ### Contamination parameters
 
@@ -98,7 +97,6 @@ Changing the -ct parameter of ifCNV can be useful but a careful consideration mu
 
 An example is provided in the paper describing ifCNV and is summarized in the figure below:
 
-![](figure_5.jpg | width=100)
-
+<img src="figure_5.jpg" alt="drawing" width="400"/>
 
 
