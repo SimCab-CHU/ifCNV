@@ -94,11 +94,11 @@ This implies a careful consideration to the localisation score threshold (-sT). 
 
 ifCNV uses 2 Isolation forests, one to detect the outlying samples (considered as CNV positives) and another to detect the outlying targets. The _contamination_ is a parameter of the isolation forest that defines the proportion of outliers in the data set. It is set for both IF as "auto" by default but can be changed by the user. 
 
-Changing the -ct parameter of ifCNV can be useful but a careful consideration must be taken on the score threshold (-sT). For example, if the user sets the -ct parameter to a small value (~\]0,0.01\]), less targets will be considered as outliers and so the localisation scores will be lower. On the other hand, if the user sets the -ct parameter to a high value (~\]0.1,0.5\]), more targets will be considered as outliers and so the localisation scores will be higher.
+Changing the -ct parameter of ifCNV can be useful but a careful consideration must be taken on the score threshold (-sT). For example, if the user sets the -ct parameter to a small value (\~\]0,0.01\]), less targets will be considered as outliers and so the localisation scores will be lower. On the other hand, if the user sets the -ct parameter to a high value (\~\]0.1,0.5\]), more targets will be considered as outliers and so the localisation scores will be higher.
 
 An example is provided in the paper describing ifCNV and is summarized in the figure below:
 
-![](figure_5.png)
+![](figure_5.jpeg)
 
 
 
