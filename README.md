@@ -98,7 +98,7 @@ Changing the -ct parameter of ifCNV can be useful but a careful consideration mu
 
 An example is provided in the paper describing ifCNV and is summarized in the figure below:
 
-![](figure_5.jpeg)
+![](figure_5.jpg)
 
 
 
