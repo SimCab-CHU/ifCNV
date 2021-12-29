@@ -88,7 +88,7 @@ This implies a careful consideration to the localisation score threshold (-sT). 
 
 
 ![](score_plot.png | width=100)
-
+<img src="score_plot.png" alt="drawing" width="200"/>
 
 ### Contamination parameters
 
