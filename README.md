@@ -2,7 +2,14 @@
 
 ## Installation
 
-### From PyPi (recommended)
+### From Conda (recommended)
+
+1. Install Conda : [documentation here](https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html)
+1. Create an envrionment : `conda create -n ifcnv`
+1. Activate the environment : `conda activate ifcnv`
+1. Install the package : `conda install -c bioconda ifcnv`
+
+### From PyPi
 
 Make sure you have python >= 3.6
 
@@ -63,7 +70,7 @@ $ ifCNV -i /path/to/bam/directory/ -b /path/to/bed/file -o /path/to/output/direc
 
 ### Resolution
 
-The resolution of ifCNV is the smallest region covered by a target. It is set in the .bed file. The 4th column of the .bed file must be the name of the targeted region. ifCNV splits this name on the "\_" character and regroups whats on the left of it as the region of interest. 
+The resolution of ifCNV is the smallest region covered by a target. It is set in the .bed file. The 4th column of the .bed file must be the name of the targeted region. ifCNV splits this name on the "\_" character and regroups whats on the left of it as the region of interest.
 
 Examples:
 ```
@@ -90,12 +97,10 @@ This implies a careful consideration to the localisation score threshold (-sT). 
 
 ### Contamination parameters
 
-ifCNV uses 2 Isolation forests, one to detect the outlying samples (considered as CNV positives) and another to detect the outlying targets. The _contamination_ is a parameter of the isolation forest that defines the proportion of outliers in the data set. It is set for both IF as "auto" by default but can be changed by the user. 
+ifCNV uses 2 Isolation forests, one to detect the outlying samples (considered as CNV positives) and another to detect the outlying targets. The _contamination_ is a parameter of the isolation forest that defines the proportion of outliers in the data set. It is set for both IF as "auto" by default but can be changed by the user.
 
 Changing the -ct parameter of ifCNV can be useful but a careful consideration must be taken on the score threshold (-sT). For example, if the user sets the -ct parameter to a small value (\~ \]0,0.01\]), less targets will be considered as outliers and so the localisation scores will be lower. On the other hand, if the user sets the -ct parameter to a high value (\~ \]0.1,0.5\]), more targets will be considered as outliers and so the localisation scores will be higher.
 
 An example is provided in the paper describing ifCNV using the ICR96 dataset, and is summarized in the figure below:
 
 <img src="figure_5.jpg" alt="drawing" width="500"/>
-
-
