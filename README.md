@@ -7,7 +7,7 @@
 1. Install Conda : [documentation here](https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html)
 1. Create an envrionment : `conda create -n ifcnv`
 1. Activate the environment : `conda activate ifcnv`
-1. Install the package : `conda install -c bioconda ifcnv`
+1. Install the package : `conda install -c conda-forge -c bioconda ifcnv`
 
 ### From PyPi
 
