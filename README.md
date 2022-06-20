@@ -34,7 +34,16 @@ pip install ifCNV
 
 ### Basic usage
 
-ifCNV creates the output directory in wich it stores the html report that will
+ifCNV stands for **i**solation **f**orest based **C**opy **N**umber **V**ariation detection. 
+
+Its usage is meant to be approachable for entry-level users. 
+
+It takes as input: 
+- the aligned sequences (.bam or .cram files and their associated indexes)
+- the genomic coordinates of the region of interest (a .bed file, see 
+http://genome.cse.ucsc.edu/FAQ/FAQformat.html#format1 for more information).
+
+ifCNV creates an output directory in wich it stores the html report that will
 open automatically.
 
 ```sh
