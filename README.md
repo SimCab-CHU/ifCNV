@@ -71,11 +71,10 @@ If you don’t have the capture regions BED file, but you do know which commerci
 - The 4th column is the reads ratio (1<reads_ratio<2 gain, reads_ratio>2 amplification, reads_ratio<1 loss).
 - The 5th column is the localization score.
 
-The user can click on each line to visualize a graph of the normalized log ratio for the region of interest.
+The user can click on each line to visualize a graph of the normalized log ratio for the region of interest where each point represents a target.
 
 <img src="docs/img/output_example_3.png" alt="drawing" width="800"/>
 
-Each point represents a target.
 
 ### More specific commands
 
