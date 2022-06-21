@@ -63,9 +63,17 @@ If you don’t have the capture regions BED file, but you do know which commerci
 
 ### Interpretation of the html report:
 
-Example:
 <img src="docs/img/output_example_2.png" alt="drawing" width="800"/>
 
+The 1st column is the run name (defult is ifCNV, but it can be specified with the -r flag).
+
+The 2nd column is the sample name (by default the table is sorted by this column).
+
+The 3rd column is the name of the region (here a gene).
+
+The 4th column is the reads ratio.
+
+The 5th column is the localization score.
 
 
 ### More specific commands
