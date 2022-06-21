@@ -73,7 +73,7 @@ If you don’t have the capture regions BED file, but you do know which commerci
 
 The user can click on each line to visualize a graph of the normalized log ratio for the region of interest where each point represents a target.
 
-<img src="docs/img/output_example_3.png" alt="drawing" width="800"/>
+<img src="docs/img/output_example_4.png" alt="drawing" width="800"/>
 
 
 ### More specific commands
