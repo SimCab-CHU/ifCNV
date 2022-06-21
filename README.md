@@ -38,17 +38,18 @@ ifCNV stands for **i**solation **f**orest based **C**opy **N**umber **V**ariatio
 
 Its usage is meant to be approachable for entry-level users. 
 
-It takes as input: 
+```sh
+ifCNV -i /path/to/bam/directory/ -b /path/to/bed/file -o /path/to/output/directory/
+```
+
+**ifCNV** input: 
 - the aligned sequences (.bam or .cram files and their associated indexes)
 - the genomic coordinates of the region of interest (a .bed file, see 
 http://genome.cse.ucsc.edu/FAQ/FAQformat.html#format1 and below for more information).
 
-ifCNV creates an output directory in wich it stores the html report that will
-open automatically.
 
-```sh
-ifCNV -i /path/to/bam/directory/ -b /path/to/bed/file -o /path/to/output/directory/
-```
+**ifCNV** ouput:
+- An html report
 
 Some **BED file** informations:
 
@@ -59,6 +60,13 @@ As it is of important for **ifCNV** let's see some key points:
 - The forth column is the name of the targeted region and it must be set carefuly as it will be used to compute the localization score (see the **Resolution paragraph**)
 
 If you don’t have the capture regions BED file, but you do know which commercial exome capture kit was used to prepare your samples, you might find the file you need in Astra-Zeneca’s reference data repository. Otherwise, try searching the vendor’s website or contacting their customer support for the right file.
+
+### Interpretation of the html report:
+
+Example:
+<img src="docs/img/output_example.png" alt="drawing" width="450"/>
+
+
 
 ### More specific commands
 
