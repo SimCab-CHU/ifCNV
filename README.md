@@ -41,7 +41,7 @@ Its usage is meant to be approachable for entry-level users.
 It takes as input: 
 - the aligned sequences (.bam or .cram files and their associated indexes)
 - the genomic coordinates of the region of interest (a .bed file, see 
-http://genome.cse.ucsc.edu/FAQ/FAQformat.html#format1 for more information).
+http://genome.cse.ucsc.edu/FAQ/FAQformat.html#format1 and below for more information).
 
 ifCNV creates an output directory in wich it stores the html report that will
 open automatically.
@@ -49,6 +49,16 @@ open automatically.
 ```sh
 ifCNV -i /path/to/bam/directory/ -b /path/to/bed/file -o /path/to/output/directory/
 ```
+
+Some **BED file** informations:
+
+The BED (Browser Extensible Data) format is a text file format used to store genomic regions as coordinates and associated annotations. The data are presented in the form of columns separated by spaces or tabs. This format was developed during the Human Genome Project and then adopted by other sequencing projects (source: wikipedia). For targeted sequencing, it is supposed to be provided by the vendor.
+
+As it is of important for **ifCNV** let's see some key points:
+- the BED file must have (at least) 4 columns, the three first are the cooridnates of the baited genomic regions and the forth one is a character describing these regions.
+- The forth column is the name of the targeted region and it must be set carefuly as it will be used to compute the localization score (see the **Resolution paragraph**)
+
+If you don’t have the capture regions BED file, but you do know which commercial exome capture kit was used to prepare your samples, you might find the file you need in Astra-Zeneca’s reference data repository. Otherwise, try searching the vendor’s website or contacting their customer support for the right file.
 
 ### More specific commands
 
