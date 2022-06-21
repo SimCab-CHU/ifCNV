@@ -30,6 +30,12 @@ Install [ifCNV](https://pypi.org/project/ifCNV/)
 pip install ifCNV
 ```
 
+## ifCNV workflow
+
+<img src="docs/img/ifCNV_workflow.jpg" alt="drawing" width="800"/>
+
+
+
 ## Users Guide
 
 ### Basic usage
