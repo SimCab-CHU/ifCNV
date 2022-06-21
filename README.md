@@ -65,16 +65,17 @@ If you don’t have the capture regions BED file, but you do know which commerci
 
 <img src="docs/img/output_example_2.png" alt="drawing" width="800"/>
 
-The 1st column is the run name (defult is ifCNV, but it can be specified with the -r flag).
+- The 1st column is the run name (defult is ifCNV, but it can be specified with the -r flag).
+- The 2nd column is the sample name (by default the table is sorted by this column).
+- The 3rd column is the name of the region (here a gene).
+- The 4th column is the reads ratio (1<reads_ratio<2 gain, reads_ratio>2 amplification, reads_ratio<1 loss).
+- The 5th column is the localization score.
 
-The 2nd column is the sample name (by default the table is sorted by this column).
+The user can click on each line to visualize a graph of the normalized log ratio for the region of interest.
 
-The 3rd column is the name of the region (here a gene).
+<img src="docs/img/output_example_3.png" alt="drawing" width="800"/>
 
-The 4th column is the reads ratio.
-
-The 5th column is the localization score.
-
+Each point represents a target.
 
 ### More specific commands
 
