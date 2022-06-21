@@ -64,7 +64,7 @@ If you don’t have the capture regions BED file, but you do know which commerci
 ### Interpretation of the html report:
 
 Example:
-<img src="docs/img/output_example.png" alt="drawing" width="450"/>
+<img src="docs/img/output_example.png" alt="drawing" width="800"/>
 
 
 
