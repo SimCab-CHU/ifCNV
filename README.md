@@ -121,7 +121,8 @@ The resolution of ifCNV is set in the .bed file. So, by changing he 4th column o
 ifCNV splits this name on the "\_" character and regroups whats on the left of it as the **region of interest**.
 
 **Example 1**:
-#### Bed file
+
+##### Bed file
 
 ```tsv
 chr4	55155143	55155306	4q12_PDGFRA_E21_STA101436	0	+	55155159	55155287	113,255,0
@@ -132,7 +133,7 @@ chr4	55561669	55561832	4q12_KIT_E2_STA101440	0	+	55561686	55561810	85,255,0
 chr4	55564526	55564689	4q12_KIT_E3_STA101441	0	+	55564544	55564675	85,255,0
 ```
 In this .bed file, the 4th column (ie the name of the target) is composed of 4 elements separated by a "\_". The first one (4q12) is the chromosome arm;
-the second one (PDGRA & KIT) is the gene name, the third one is the exon number and the forth one is the target name.
+the second one (PDGRA & KIT) is the gene name; the third one is the exon number and the forth one is the target name.
 Using this .bed file, the resolution will be at the chromosome arm level, meaning the six
 targets will be considered as belonging to the same **region of interest** (4q12) in the calculus of the localisation score and in the output. 
 
@@ -159,11 +160,14 @@ chr4	55161233	55161388	4q12-PDGFRA-E23_STA101438	0	+	55161253	55161366	113,255,0
 chr4	55524153	55524297	4q12-KIT-E1_STA101439	0	+	55524170	55524281	85,255,0
 chr4	55561669	55561832	4q12-KIT-E2_STA101440	0	+	55561686	55561810	85,255,0
 chr4	55564526	55564689	4q12-KIT-E3_STA101441	0	+	55564544	55564675	85,255,0
-``
+```
 Using this .bed file, the resolution will be at the exon level, meaning each target will be considered as belonging to a single **region of interest** (ie 4q12-PDGFRA-E21).
 
-#### Localisatin score
+##### Localisatin score
 
+Specific regions of biological significance (gene or exon) can be covered by several targets. In the event that a region is altered, all the targets in the region should be modified. By contrast, if only one target in the region is modified, it is likely to be an FP. We integrated this reasoning to develop a localisation score in order to reduce the number of FPs. The localisation score depends on the number of modified targets in the region, the number of targets in the region and the total number of targets in the panel. A semi-open log scale incorporating the ratio of modified targets in the region was chosen. It is calculated as follows:
+
+<p align="center"><img src="docs/img/equation_loc.jpeg" alt="drawing" width="300"/></p>
 
 This implies a careful consideration to the localisation score threshold (-sT).
 Indeed, the localisation score depends on the size of the region of interest.
