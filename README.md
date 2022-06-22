@@ -120,9 +120,7 @@ ifCNV -i /path/to/bam/directory/ -b /path/to/bed/file -o /path/to/output/directo
 The resolution of ifCNV is set in the .bed file. So, by changing he 4th column of the .bed file the user can easily change the resolution of ifCNV. 
 ifCNV splits this name on the "\_" character and regroups whats on the left of it as the **region of interest**.
 
-**Example 1**:
-
-##### Bed file
+**A**:
 
 ```tsv
 chr4	55155143	55155306	4q12_PDGFRA_E21_STA101436	0	+	55155159	55155287	113,255,0
@@ -137,6 +135,7 @@ the second one (PDGRA & KIT) is the gene name; the third one is the exon number 
 Using this .bed file, the resolution will be at the chromosome arm level, meaning the six
 targets will be considered as belonging to the same **region of interest** (4q12) in the calculus of the localisation score and in the output. 
 
+**B**:
 The user can increase the resolution by changing the separating character. For example:
 ```tsv
 chr4	55155143	55155306	4q12-PDGFRA_E21_STA101436	0	+	55155159	55155287	113,255,0
@@ -151,6 +150,8 @@ Using this .bed file, the resolution will be at the gene level, meaning the 3
 first targets will be considered as belonging to the same region (4q12-PDGFRA) and the 3
 last to another **region of interest** (4q12-KIT) in the calculus of the localisation score and in the output.
 
+**C**:
+
 Again, in this example, the user can increase the resolution by changing the separating character:
 
 ```tsv
@@ -163,13 +164,53 @@ chr4	55564526	55564689	4q12-KIT-E3_STA101441	0	+	55564544	55564675	85,255,0
 ```
 Using this .bed file, the resolution will be at the exon level, meaning each target will be considered as belonging to a single **region of interest** (ie 4q12-PDGFRA-E21).
 
-##### Localisatin score
+##### Localisation score
 
-Specific regions of biological significance (gene or exon) can be covered by several targets. In the event that a region is altered, all the targets in the region should be modified. By contrast, if only one target in the region is modified, it is likely to be an FP. We integrated this reasoning to develop a localisation score in order to reduce the number of FPs. The localisation score depends on the number of modified targets in the region, the number of targets in the region and the total number of targets in the panel. A semi-open log scale incorporating the ratio of modified targets in the region was chosen. It is calculated as follows:
+Specific regions of biological significance (gene or exon) can be covered by several targets. In the event that a region is altered, all the targets in the region should be modified. By contrast, if only one target in the region is modified, it is likely to be a FP. We integrated this reasoning to develop a localisation score in order to reduce the number of FPs. The localisation score depends on the number of modified targets in the region, the number of targets in the region and the total number of targets in the panel. A semi-open log scale incorporating the ratio of modified targets in the region was chosen. It is calculated as follows:
 
-<p align="center"><img src="docs/img/equation_loc.jpeg" alt="drawing" width="300"/></p>
+<p align="center"><img src="docs/img/equation_loc.jpeg" alt="drawing" width="350"/></p>
 
-This implies a careful consideration to the localisation score threshold (-sT).
+*whith k the number of modified targets on the region, n the number of targets on the region, N the total number of targets.*
+
+This score is thresholded to keep only the significant regions, by default the threshold is 10. However, it can be useful for the user to change that threshold regarding the design of the experiment. 
+
+For example, in the first case (**A**), 6 targets are on the same region, this means that with a panel of 1000 targets the score will range from 0.86 to 30.7 depending on the number of outlying targets detected:
+
+|Number of outlying targets|Localisation score|
+|--------------------------|------------------|
+|0|0|
+|1|0.87|
+|2|3.42|
+|3|7.68|
+|4|13.65|
+|5|21.32|
+|6|30.7|
+
+With a score threshold (-sT) at 10 ifCNV will consider the regoin significantly altered if 4 targets are.
+
+In the second case (**B**), 3 targets are in the same region, for the same panel (1000 targets) the score will range from 1.94 to 17.42:
+
+|Number of outlying targets|Localisation score|
+|--------------------------|------------------|
+|0|0|
+|1|1.94|
+|2|7.75|
+|3|17.42|
+
+Which means that the region will be considered altered if all three regions are detected as outliers.
+
+In the third case (**C**), there is only one target per region, meaning that the localisation score will be either 0 either 6.91.
+
+ifCNV will never consider the regions as altered if the user doesn't change the score threshold.
+
+The command in this case will be:
+
+```sh
+ifCNV -i /path/to/bam/directory/ -b /path/to/bed/file -o /path/to/output/directory/ -sT 6
+```
+Then, if an exon is detected as an outlier it will be considered as altered.
+
+All this implies a careful consideration to the localisation score threshold (-sT).
 Indeed, the localisation score depends on the size of the region of interest.
 For example, 3 altered targets on 3 targets of the region of interest will have
 a smaller localisation score than 10 altered targets on 10 targets of the region
@@ -177,7 +218,7 @@ of interest (see image below).
 
 <img src="docs/img/score_plot.png" alt="drawing" width="450"/>
 
-### Contamination parameters
+#### Contamination parameters
 
 ifCNV uses 2 Isolation forests, one to detect the outlying samples (considered
 as CNV positives) and another to detect the outlying targets. The
