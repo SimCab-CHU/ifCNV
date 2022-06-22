@@ -108,42 +108,62 @@ output directory)
 ```sh
 ifCNV -i /path/to/bam/directory/ -b /path/to/bed/file -o /path/to/output/directory/ -sv True
 ```
-- changing mode from 'fast' (default) to 'extensive', will take a bit longer
-but doing so ifCNV will check every sample of the run for altered targets
+- changing mode from 'fast' (default) to 'extensive'. In 'fast' mode, ifCNV tests the CNVpos samples against the intrarun reference created from all the CNVneg samples. In 'extensive' mode, ifCNV tests all the samples of the run against the reference.
 ```sh
 ifCNV -i /path/to/bam/directory/ -b /path/to/bed/file -o /path/to/output/directory/ -m 'extensive'
 ```
 
-### Resolution
+### Exploring real life scenarios
 
-The resolution of ifCNV is the smallest region covered by a target. It is set in
-the .bed file. The 4th column of the .bed file must be the name of the targeted
-region. ifCNV splits this name on the "\_" character and regroups whats on the
-left of it as the region of interest.
+#### Changing the resolution
 
-Examples:
-```tsv
-1	65300120	65300271	JAK1_E25_STA100319	0	+	65300140	65300249	255,0,0
-1	65300220	65300383	JAK1_E25_STA100320	0	+	65300246	65300353	255,0,0
-1	65300278	65300427	JAK1_E25_STA100321	0	+	65300296	65300393	255,0,0
-1	65301022	65301161	JAK1_E24_STA100322	0	+	65301046	65301143	255,0,0
-1	65301065	65301228	JAK1_E24_STA100323	0	+	65301085	65301202	255,0,0
-```
-Using this .bed file, the resolution will be at the gene level, meaning the five
-amplicons will be considered as belonging to the same region (JAK1) in the
-calculus of the localisation score.
+The resolution of ifCNV is set in the .bed file. So, by changing he 4th column of the .bed file the user can easily change the resolution of ifCNV. 
+ifCNV splits this name on the "\_" character and regroups whats on the left of it as the **region of interest**.
+
+**Example 1**:
+#### Bed file
 
 ```tsv
-1	65300120	65300271	JAK1-E25_STA100319	0	+	65300140	65300249	255,0,0
-1	65300220	65300383	JAK1-E25_STA100320	0	+	65300246	65300353	255,0,0
-1	65300278	65300427	JAK1-E25_STA100321	0	+	65300296	65300393	255,0,0
-1	65301022	65301161	JAK1-E24_STA100322	0	+	65301046	65301143	255,0,0
-1	65301065	65301228	JAK1-E24_STA100323	0	+	65301085	65301202	255,0,0
+chr4	55155143	55155306	4q12_PDGFRA_E21_STA101436	0	+	55155159	55155287	113,255,0
+chr4	55156535	55156697	4q12_PDGFRA_E22_STA101437	0	+	55156551	55156681	113,255,0
+chr4	55161233	55161388	4q12_PDGFRA_E23_STA101438	0	+	55161253	55161366	113,255,0
+chr4	55524153	55524297	4q12_KIT_E1_STA101439	0	+	55524170	55524281	85,255,0
+chr4	55561669	55561832	4q12_KIT_E2_STA101440	0	+	55561686	55561810	85,255,0
+chr4	55564526	55564689	4q12_KIT_E3_STA101441	0	+	55564544	55564675	85,255,0
+```
+In this .bed file, the 4th column (ie the name of the target) is composed of 4 elements separated by a "\_". The first one (4q12) is the chromosome arm;
+the second one (PDGRA & KIT) is the gene name, the third one is the exon number and the forth one is the target name.
+Using this .bed file, the resolution will be at the chromosome arm level, meaning the six
+targets will be considered as belonging to the same **region of interest** (4q12) in the calculus of the localisation score and in the output. 
+
+The user can increase the resolution by changing the separating character. For example:
+```tsv
+chr4	55155143	55155306	4q12-PDGFRA_E21_STA101436	0	+	55155159	55155287	113,255,0
+chr4	55156535	55156697	4q12-PDGFRA_E22_STA101437	0	+	55156551	55156681	113,255,0
+chr4	55161233	55161388	4q12-PDGFRA_E23_STA101438	0	+	55161253	55161366	113,255,0
+chr4	55524153	55524297	4q12-KIT_E1_STA101439	0	+	55524170	55524281	85,255,0
+chr4	55561669	55561832	4q12-KIT_E2_STA101440	0	+	55561686	55561810	85,255,0
+chr4	55564526	55564689	4q12-KIT_E3_STA101441	0	+	55564544	55564675	85,255,0
 ```
 
-Using this .bed file, the resolution will be at the exon level, meaning the 3
-first will be considered as belonging to the same region (JAK1-E25) and the 2
-last to another region (JAK1-E24) in the calculus of the localisation score.
+Using this .bed file, the resolution will be at the gene level, meaning the 3
+first targets will be considered as belonging to the same region (4q12-PDGFRA) and the 3
+last to another **region of interest** (4q12-KIT) in the calculus of the localisation score and in the output.
+
+Again, in this example, the user can increase the resolution by changing the separating character:
+
+```tsv
+chr4	55155143	55155306	4q12-PDGFRA-E21_STA101436	0	+	55155159	55155287	113,255,0
+chr4	55156535	55156697	4q12-PDGFRA-E22_STA101437	0	+	55156551	55156681	113,255,0
+chr4	55161233	55161388	4q12-PDGFRA-E23_STA101438	0	+	55161253	55161366	113,255,0
+chr4	55524153	55524297	4q12-KIT-E1_STA101439	0	+	55524170	55524281	85,255,0
+chr4	55561669	55561832	4q12-KIT-E2_STA101440	0	+	55561686	55561810	85,255,0
+chr4	55564526	55564689	4q12-KIT-E3_STA101441	0	+	55564544	55564675	85,255,0
+``
+Using this .bed file, the resolution will be at the exon level, meaning each target will be considered as belonging to a single **region of interest** (ie 4q12-PDGFRA-E21).
+
+#### Localisatin score
+
 
 This implies a careful consideration to the localisation score threshold (-sT).
 Indeed, the localisation score depends on the size of the region of interest.
