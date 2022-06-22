@@ -34,7 +34,7 @@ pip install ifCNV
 
 <img src="docs/img/ifCNV_workflow.jpg" alt="drawing" width="800"/>
 
-
+ifCNV is a CNV detection tool based on read-depth distribution obtained from NGS data (A). It integrates a pre-processing step to create a read-depth matrix using as input the aligned .bam files and a corresponding .bed file. This reads matrix is composed of the samples as columns and the targets as rows. Next, it uses an IF machine learning algorithm to detect the samples with a strong bias between the 99th percentile and the mean (for amplifications, B, top plot), and the 1st percentile and the mean (for deletions, B, bottom plot). These samples are assumed to be CNVpos. The samples with no bias, and therefore not detected by the IF as outliers, are considered as CNVneg samples. After filtering of the samples with a mean read depth per target less than N (N=100 by default but can be set by the user to any value), the reads matrix is normalized by dividing each column (i.e., the reads distribution of each sample) by its median. Then, ifCNV creates a mean normalized normal sample by averaging all the CNVneg samples. It is used as a reference to detect the outlying targets in each normalized CNVpos sample with a second IF (C). These assumed altered targets, are then used to compute the localization score per region of interest (see methods section). Finally, a threshold is applied on this score to select the significantly altered regions that are compiled in an html report containing a table and a graph for easy user interpretation.
 
 ## Users Guide
 
