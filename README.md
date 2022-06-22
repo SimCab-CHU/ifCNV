@@ -113,7 +113,7 @@ ifCNV -i /path/to/bam/directory/ -b /path/to/bed/file -o /path/to/output/directo
 ifCNV -i /path/to/bam/directory/ -b /path/to/bed/file -o /path/to/output/directory/ -m 'extensive'
 ```
 
-### Exploring real life scenarios
+### Exploring different scenarios
 
 #### Changing the resolution
 
@@ -136,6 +136,7 @@ Using this .bed file, the resolution will be at the chromosome arm level, meanin
 targets will be considered as belonging to the same **region of interest** (4q12) in the calculus of the localisation score and in the output. 
 
 **B**:
+
 The user can increase the resolution by changing the separating character. For example:
 ```tsv
 chr4	55155143	55155306	4q12-PDGFRA_E21_STA101436	0	+	55155159	55155287	113,255,0
@@ -210,30 +211,48 @@ ifCNV -i /path/to/bam/directory/ -b /path/to/bed/file -o /path/to/output/directo
 ```
 Then, if an exon is detected as an outlier it will be considered as altered.
 
-All this implies a careful consideration to the localisation score threshold (-sT).
-Indeed, the localisation score depends on the size of the region of interest.
-For example, 3 altered targets on 3 targets of the region of interest will have
-a smaller localisation score than 10 altered targets on 10 targets of the region
-of interest (see image below).
-
-<img src="docs/img/score_plot.png" alt="drawing" width="450"/>
+Therfor, there is no longer a control of false positives when looking for CNVs on regions covered with only one target (typically exons in capture experiments). To recover some control over the false positive rate, the user can change the contamination parameters.
 
 #### Contamination parameters
 
 ifCNV uses 2 Isolation forests, one to detect the outlying samples (considered
 as CNV positives) and another to detect the outlying targets. The
-_contamination_ is a parameter of the isolation forest that defines the
+_contamination_ is a parameter of the isolation forest that sets a seed value for the
 proportion of outliers in the data set. It is set for both IF as "auto" by
 default but can be changed by the user.
 
 Changing the -ct parameter of ifCNV can be useful but a careful consideration
 must be taken on the score threshold (-sT). For example, if the user sets the
 -ct parameter to a small value (\~ \]0,0.01\]), less targets will be considered
-as outliers and so the localisation scores will be lower. On the other hand, if
-the user sets the -ct parameter to a high value (\~ \]0.1,0.5\]), more targets
-will be considered as outliers and so the localisation scores will be higher.
+as outliers and so the localisation scores will be lower. Therefore the user will have to lower the socre threshold (-sT):
 
-An example is provided in the paper describing ifCNV using the ICR96 dataset,
-and is summarized in the figure below:
+
+```sh
+ifCNV -i /path/to/bam/directory/ -b /path/to/bed/file -o /path/to/output/directory/ -sT 0 -ct 0.01
+```
+
+
+On the other hand, if the user sets the -ct parameter to a high value (\~ \]0.1,0.5\]), more targets
+will be considered as outliers and so the localisation scores will be higher. Therefore the user will have to increase the socre threshold (-sT):
+
+```sh
+ifCNV -i /path/to/bam/directory/ -b /path/to/bed/file -o /path/to/output/directory/ -sT 30 -ct 0.2
+```
+
+
+An example is provided in the paper describing ifCNV using the ICR96 dataset, a case similar to **C**, when there is only one target per **region of interest**. It is summarized in the figure below that can be used to set up the appropriate contamination (-ct) parameter:
 
 <img src="docs/img/figure_5.jpg" alt="drawing" width="450"/>
+
+In the case the user wants a lot of potential candidates, capturing all the true positives but taking the risk of having false positives:
+
+```sh
+ifCNV -i /path/to/bam/directory/ -b /path/to/bed/file -o /path/to/output/directory/ -sT 0 -ct 0.15
+```
+
+In the case the user wants only true positives and no false positives but taking the risk to miss some true positives:
+
+```sh
+ifCNV -i /path/to/bam/directory/ -b /path/to/bed/file -o /path/to/output/directory/ -sT 0 -ct 0.01
+```
+
