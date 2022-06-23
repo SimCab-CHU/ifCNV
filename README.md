@@ -62,7 +62,7 @@ Some **BED file** informations:
 The BED (Browser Extensible Data) format is a text file format used to store genomic regions as coordinates and associated annotations. The data are presented in the form of columns separated by spaces or tabs. This format was developed during the Human Genome Project and then adopted by other sequencing projects (source: wikipedia). For targeted sequencing, it is supposed to be provided by the vendor.
 
 As it is of great importance for **ifCNV** let's see some key points:
-- the BED file must have (at least) 4 columns, the three first are the cooridnates of the baited genomic regions and the forth one is a character describing these regions.
+- the BED file must have (at least) 4 columns, the three first are the coordinates of the baited genomic regions and the forth one is a string describing these regions.
 - The forth column is the name of the targeted region and it must be set carefuly as it will be used to compute the localization score (see the **Resolution paragraph**)
 
 If you don’t have the capture regions BED file, but you do know which commercial exome capture kit was used to prepare your samples, you might find the file you need in Astra-Zeneca’s reference data repository. Otherwise, try searching the vendor’s website or contacting their customer support for the right file.
