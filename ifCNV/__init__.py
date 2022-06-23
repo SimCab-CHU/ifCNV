@@ -18,7 +18,7 @@
 __author__ = 'Simon Cabello'
 __copyright__ = 'Copyright (C) 2021'
 __license__ = 'GNU General Public License'
-__version__ = '0.2.1'
+__version__ = '0.2.2'
 __email__ = 's-cabelloaguilar@chu-montpellier.fr'
 __status__ = 'prod'
 
@@ -363,8 +363,9 @@ def aberrantAmpliconsFinal(reads, reads_norm, CNVpos, CNVneg, scoreThreshold=10,
                 amplif = amplifEvalGene(reads_norm, gene, CNVneg, name)
 
                 if score > scoreThreshold:
-                    f.loc[q] = [run, name, gene, amplif, score]
-                    q = q + 1
+                    if amplif > 1.5 or amplif < 0.7:
+                        f.loc[q] = [run, name, gene, amplif, score]
+                        q = q + 1
     if verbose:
         print(f"{str(f.shape[0])} aberrant regions found in {str(len(np.unique(f['Sample name'])))} samples.\n")
 
