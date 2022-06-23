@@ -1,0 +1,100 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>ifCNV</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="ressources/lib///w3.css" />
+    <link rel="stylesheet" href="ressources/fontawesome-free-5.3.1-web/css/all.css" />
+    <link rel="stylesheet" href="ressources/lib///datatables/datatables.min.css" />
+    <link rel="stylesheet" href="ressources/lib///interface.css" />
+  </head>
+  <body>
+    <!-- Top container -->
+    <div class="w3-bar w3-top w3-blue-grey w3-large" style="margin-left:10px;">
+      <img src="ressources/ifCNV.png" width="170" height="80">
+      <span style="color:white" class="w3-display-middle"><b><i><font size="+20" face="calibri">ifCNV Report</font></i></b></span>
+    </div>
+  <body>
+    <div id="Summary" class="w3-container" style="margin-left:50px;margin-top:125px;">
+      <h2>
+        <b><center>Results</center></b>
+      </h2>
+
+    <div class="w3-main" style="margin-left:100px;margin-right:100px;">
+        <div id="runs" class="w3-container" style="padding-top:10px;">
+          <table id="T_runs" class="w3-table-all w3-hoverable w3-centered">
+            <thead>
+              <tr>
+                <th>Run</th>
+                <th>Sample Name</th>
+                <th>Region</th>
+                <th>Reads ratio</th>
+                <th>Score</th>
+              </tr>
+            </thead>
+            <tbody>
+				<tr url="N22D01242_10q23.html" style="cursor: pointer;"><td>ifCNV</td><td>N22D01242</td><td>10q23</td><td>0.16</td><td>63.08</td></tr>
+			<tr url="N22D01242_4q12.html" style="cursor: pointer;"><td>ifCNV</td><td>N22D01242</td><td>4q12</td><td>2.6</td><td>53.22</td></tr>
+			<tr url="P22D01262_4q12.html" style="cursor: pointer;"><td>ifCNV</td><td>P22D01262</td><td>4q12</td><td>1.94</td><td>60.74</td></tr>
+			<!--ADD RUN-->
+            </tbody>
+            <tfoot class="" style="">
+              <tr class="" style="">
+                <th>Run</th>
+                <th>Sample Name</th>
+                <th>Region</th>
+                <th>Reads ratio</th>
+                <th>Score</th>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+    </div>
+</body>
+
+<script type="text/javascript" src="ressources/lib/datatables/datatables.min.js"></script>
+  <script>
+  $('body').on('mousedown', 'tr[url]', function(e){
+      var click = e.which;
+      var url = $(this).attr('url');
+      if(url){
+          if(click == 2 || (click == 1 && (e.ctrlKey || e.metaKey))){
+              window.open(url, '_blank');
+              window.focus();
+          }
+          else if(click == 1){
+              window.location.href = url;
+          }
+          return true;
+      }
+  });
+
+            $(document).ready(function() {
+                $('#T_runs tfoot th').each( function () {
+                    var title = $(this).text();
+                    $(this).html( '<input type="text" placeholder="Search '+title+'" style="width:100%" />' );
+                } );
+
+                var table = $('#T_runs').DataTable({
+                    paging:true,
+                    order: [[1, 'desc']],
+                });
+
+                table.columns().every( function () {
+                    var that = this;
+
+                    $( 'input', this.footer() ).on( 'keyup change', function () {
+                        if ( that.search() !== this.value ) {
+                            that
+                                .search( this.value )
+                                .draw();
+                        }
+                    });
+                });
+            });
+        </script>
+
+</html>
+    

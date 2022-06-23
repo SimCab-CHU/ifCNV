@@ -1,0 +1,28 @@
+table.dataTable tbody tr.selected {
+    background-color: #74b9ff !important;
+}
+table.dataTable tbody tr.selected:hover{
+    color:#FFFF!important;
+    background-color:#0984e3!important
+}
+
+.w3-pale-green-a,.w3-hover-pale-green-a:hover{color:#000!important;background-color:#55efc4!important}
+.w3-green-a,.w3-hover-green-a:hover{color:#000!important;background-color:#00b894!important}
+.w3-pale-yellow-a,.w3-hover-pale-yellow-a:hover{color:#000!important;background-color:#ffeaa7!important}
+.w3-yellow-a,.w3-hover-yellow-a:hover{color:#000!important;background-color:#fdcb6e!important}
+.w3-pale-orange,.w3-hover-pale-orange:hover{color:#000!important;background-color:#ffd69a!important}
+.w3-orange-a,.w3-hover-orange-a:hover{color:#000!important;background-color:#e17055!important}
+
+.node circle {
+  fill: #fff;
+  stroke: steelblue;
+  stroke-width: 2px;
+}
+
+.node text { font-size:  10px; }
+
+.link {
+  fill: none;
+  stroke: #ccc;
+  stroke-width: 2px;
+}
