@@ -149,7 +149,7 @@ chr4	55564526	55564689	4q12-KIT_E3_STA101441	0	+	55564544	55564675	85,255,0
 
 Using this .bed file, the resolution will be at the gene level, meaning the 3
 first targets will be considered as belonging to the same region (4q12-PDGFRA) and the 3
-last to another **region of interest** (4q12-KIT) in the calculus of the localisation score and in the output.
+last to another **region of interest** (4q12-KIT) in the calculus of the localization score and in the output.
 
 **C**:
 
@@ -165,7 +165,7 @@ chr4	55564526	55564689	4q12-KIT-E3_STA101441	0	+	55564544	55564675	85,255,0
 ```
 Using this .bed file, the resolution will be at the exon level, meaning each target will be considered as belonging to a single **region of interest** (ie 4q12-PDGFRA-E21).
 
-##### Localisation score
+##### Localization score
 
 Specific regions of biological significance (gene or exon) can be covered by several targets. In the event that a region is altered, all the targets in the region should be modified. By contrast, if only one target in the region is modified, it is likely to be a FP. We integrated this reasoning to develop a localisation score in order to reduce the number of FPs. The localisation score depends on the number of modified targets in the region, the number of targets in the region and the total number of targets in the panel. A semi-open log scale incorporating the ratio of modified targets in the region was chosen. It is calculated as follows:
 
@@ -177,7 +177,7 @@ This score is thresholded to keep only the significant regions, by default the t
 
 For example, in the first case (**A**), 6 targets are on the same region, this means that with a panel of 1000 targets the score will range from 0.86 to 30.7 depending on the number of outlying targets detected:
 
-|Number of outlying targets|Localisation score|
+|Number of outlying targets|Localization score|
 |--------------------------|------------------|
 |0|0|
 |1|0.87|
@@ -191,7 +191,7 @@ With a score threshold (-sT) at 10 ifCNV will consider the regoin significantly 
 
 In the second case (**B**), 3 targets are in the same region, for the same panel (1000 targets) the score will range from 1.94 to 17.42:
 
-|Number of outlying targets|Localisation score|
+|Number of outlying targets|Localization score|
 |--------------------------|------------------|
 |0|0|
 |1|1.94|
