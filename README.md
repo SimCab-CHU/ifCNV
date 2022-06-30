@@ -187,7 +187,7 @@ For example, in the first case (**A**), 6 targets are on the same region, this m
 |5|21.32|
 |6|30.7|
 
-With a score threshold (-sT) at 10 ifCNV will consider the regoin significantly altered if 4 targets are.
+With a score threshold (-sT) at 10, ifCNV will consider the region significantly altered if 4 targets are.
 
 In the second case (**B**), 3 targets are in the same region, for the same panel (1000 targets) the score will range from 1.94 to 17.42:
 
