@@ -202,7 +202,7 @@ Which means that the region will be considered altered if all three regions are 
 
 In the third case (**C**), there is only one target per region, meaning that the localisation score will be either 0 or 6.91.
 
-ifCNV will never consider the regions as altered if the user doesn't change the score threshold.
+ifCNV will never consider the regions as altered if the user doesn't change the score threshold (-sT flag).
 
 The command in this case will be:
 
