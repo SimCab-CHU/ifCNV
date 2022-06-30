@@ -1,4 +1,4 @@
-# ifCNV : a novel isolation-forest-based package to detect copy number variations from various NGS datasets
+# ifCNV : a novel isolation-forest-based package to detect copy number variations from various targeted NGS datasets
 
 ## Installation
 
