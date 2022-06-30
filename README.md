@@ -113,7 +113,7 @@ ifCNV -i /path/to/bam/directory/ -b /path/to/bed/file -o /path/to/output/directo
 ifCNV -i /path/to/bam/directory/ -b /path/to/bed/file -o /path/to/output/directory/ -m 'extensive'
 ```
 
-### Exploring different scenarios
+### Exploring different scenari
 
 #### Changing the resolution
 
