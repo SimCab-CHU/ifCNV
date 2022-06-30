@@ -224,7 +224,7 @@ default but can be changed by the user.
 Changing the -ct parameter of ifCNV can be useful but a careful consideration
 must be taken on the score threshold (-sT). For example, if the user sets the
 -ct parameter to a small value (\~ \]0,0.01\]), less targets will be considered
-as outliers and so the localisation scores will be lower. Therefore the user will have to lower the socre threshold (-sT):
+as outliers and so the localisation scores will be lower. Therefore the user will have to lower the score threshold (-sT):
 
 
 ```sh
@@ -233,7 +233,7 @@ ifCNV -i /path/to/bam/directory/ -b /path/to/bed/file -o /path/to/output/directo
 
 
 On the other hand, if the user sets the -ct parameter to a high value (\~ \]0.1,0.5\]), more targets
-will be considered as outliers and so the localisation scores will be higher. Therefore the user will have to increase the socre threshold (-sT):
+will be considered as outliers and so the localisation scores will be higher. Therefore the user will have to increase the score threshold (-sT):
 
 ```sh
 ifCNV -i /path/to/bam/directory/ -b /path/to/bed/file -o /path/to/output/directory/ -sT 30 -ct 0.2
