@@ -215,7 +215,7 @@ Therefore, there is no longer a control of false positives when looking for CNVs
 
 #### Contamination parameters
 
-ifCNV uses 2 Isolation forests, one to detect the outlying samples (considered
+ifCNV uses 2 Isolation forests (IF), one to detect the outlying samples (considered
 as CNV positives) and another to detect the outlying targets. The
 _contamination_ is a parameter of the isolation forest that sets a seed value for the
 proportion of outliers in the data set. It is set for both IF as "auto" by
