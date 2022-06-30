@@ -211,7 +211,7 @@ ifCNV -i /path/to/bam/directory/ -b /path/to/bed/file -o /path/to/output/directo
 ```
 Then, if an exon is detected as an outlier it will be considered as altered.
 
-Therfor, there is no longer a control of false positives when looking for CNVs on regions covered with only one target (typically exons in capture experiments). To recover some control over the false positive rate, the user can change the contamination parameters.
+Therefore, there is no longer a control of false positives when looking for CNVs on regions covered with only one target (typically exons in capture experiments). To recover some control over the false positive rate, the user can change the contamination parameters.
 
 #### Contamination parameters
 
