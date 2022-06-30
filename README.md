@@ -42,7 +42,7 @@ ifCNV is a CNV detection tool based on read-depth distribution obtained from tar
 
 ifCNV stands for **i**solation **f**orest based **C**opy **N**umber **V**ariation detection. 
 
-Its usage is meant to be approachable for entry-level users. ifCNV can be run on germline or somatic samples indifferently. It runs on the aligned files (.bam or .cram) of an entire sequencing run at once and requires at least three samples to be accurate.
+Its usage is meant to be approachable for entry-level users. ifCNV can be run on germline or somatic samples indifferently. It runs on the aligned files (.bam or .cram) of an entire targeted (capture or amplicon) sequencing run at once and requires at least three samples to be accurate.
 
 ```sh
 ifCNV -i /path/to/bam/directory/ -b /path/to/bed/file -o /path/to/output/directory/
