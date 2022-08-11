@@ -49,7 +49,7 @@ ifCNV -i /path/to/bam/directory/ -b /path/to/bed/file -o /path/to/output/directo
 ```
 
 
-```sh
+```
 ifCNV -h
 usage: ifCNV [-h] -i INPUT -b BED -o OUTPUT [-s SKIP] [-m MODE] [-rm READSMATRIXOUPTUT] [-min MINREADS] [-cs CONTASAMPLES] [-ct CONTATARGETS]
              [-sT SCORETHRESHOLD] [-rS REGSAMPLE] [-rT REGTARGETS] [-v VERBOSE] [-a AUTOOPEN] [-r RUN] [-sv SAVE] [-l LIB_RESSOURCES]
