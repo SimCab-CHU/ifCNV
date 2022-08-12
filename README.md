@@ -89,7 +89,8 @@ Mandatory:
                         Path to the input bam folder
   -b BED, --bed BED     Path to the bed file
   -o OUTPUT, --output OUTPUT
-                        Path to the output report```
+                        Path to the output report
+```
 
 
 
