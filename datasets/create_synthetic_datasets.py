@@ -3,9 +3,15 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 ####################################################
-# FUNCTIONS
-###################################
+#                  FUNCTIONS                       #
+####################################################
 
+def norm_ref(ref):
+    med = ref.median(axis=0)
+    norm_ref = ref/med
+    return norm_ref, med
+
+    
 def create_synthetic(norm_ref,med,N):
     synt = pd.DataFrame(index=norm_ref.index,columns=range(N))
     for j in range(N):
@@ -34,9 +40,9 @@ def add_features(synt,sample,gene,factor,exon=None):
 
 
 
-############################
-# MAIN
-##########################
+####################################################
+#                     MAIN                         #
+####################################################
 
 ref = pd.read_csv("path/to/experimental/data",sep="\t",index_col=0)
 
