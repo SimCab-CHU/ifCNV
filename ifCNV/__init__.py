@@ -217,7 +217,12 @@ def replaceZeroes(data):
     return data
 
 
-def createReadsMatrix(pathToBam, bedFile, output=None, verbose=False):
+def createReadsMatrix(pathToBam, bedFile, output=None, verbose=False, cov=False):
+    # default extension file to use
+    ext="bam"
+    if cov==True:
+        # extension of pre-computed bedtools multicov tsv file
+        ext="tsv"
     cmd = ["ls", pathToBam]
     res = subprocess.check_output(cmd)
     final = pd.DataFrame()
@@ -225,7 +230,24 @@ def createReadsMatrix(pathToBam, bedFile, output=None, verbose=False):
     bed = BedTool(bedFile)
 
     for i in res.decode('utf-8').split("\n"):
-        if i.endswith(".bam"):
+        # use bedtools multicov tsv file 
+        if ext=="tsv" and i.endswith(".tsv"):
+            sampleName = i[:-4]
+            if verbose:
+                print(f"Load 'bedtools multicov' tsv file for sample {sampleName}...")
+            try:
+                pathCov = pathToBam + "/" + i
+                # add header to the dataframe (externel bedtools multicov do not put one)
+                df = pd.read_csv(pathCov, sep='\t', names=["chrom","start","end","name","score"])
+                final[sampleName] = df[df.keys()[len(df.columns) - 1]]
+                if verbose:
+                    print(f"{sampleName} Done \n")
+            except subprocess.CalledProcessError:
+                print(f"{sampleName} : skipped")
+                print("Unvalid or missing coverage tsv file\n")
+
+        # use bam file
+        if ext=="bam" and i.endswith(".bam"):
             sampleName = i[:-4]
             if verbose:
                 print(f"Processing sample {sampleName}...")
@@ -382,7 +404,7 @@ def main(args):
         lib_ressources = args.lib_ressources
     # Create or open the reads matrix
     if args.skip is None:
-        reads = createReadsMatrix(pathToBam=args.input, bedFile=args.bed, verbose=args.verbose, output=args.readsMatrixOuptut)
+        reads = createReadsMatrix(pathToBam=args.input, bedFile=args.bed, verbose=args.verbose, output=args.readsMatrixOuptut, cov=args.withCov)
     else:
         reads = pd.read_csv(args.skip, sep="\t", index_col=0)
 
