@@ -153,6 +153,13 @@ if __name__ == "__main__":
         default=None,
         help='Path where lib to import for report.'
     )
+    parser.add_argument(
+        '-wC',
+        '--withCov',
+        default=False,
+        action='store_true',
+        help='if set (no argument), loads precomputed bedtools multicov .tsv file from input bam folder'
+    )
 
     args = parser.parse_args()
     ifCNV.main(args)
